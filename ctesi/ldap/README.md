@@ -1,0 +1,1 @@
+Credit to [magnunleno](https://github.com/magnunleno) for this pull request on Flask-Security [https://github.com/mattupstate/flask-security/pull/536](https://github.com/mattupstate/flask-security/pull/536).

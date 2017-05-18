@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% raw %}
+<div id="app" class="ui container">
+    <h1 class="ui header">
+        Ctesi
+        <div class="sub header">A sytem for automatic processing of mass spec data.</div>
+    </h1>
+
+    <form class="ui form" v-on:submit.prevent="onSubmit">
+        <div class="field">
+            <label>Experiment name</label>
+            <input type="text" name="experiment_name" placeholder="ABC123" v-model="data.name">
+        </div>
+        <div class="field">
+            <label>Experiment type</label>
+            <select v-model="data.type" name="experiment_type">
+                <option value="mudpit">mudpit</option>
+                <option value="redime">redime</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Organism</label>
+            <select v-model="data.organism" name="organism">
+                <option value="human">human</option>
+                <option value="mouse">mouse</option>
+            </select>
+        </div>
+        <div class="fields">
+            <div class="field">
+                <label>IP2 Username</label>
+                <input type="text" v-model="data.ip2username" name="ip2_username" placeholder="Username">
+            </div>
+            <div class="field">
+                <label>IP2 Password:</label>
+                <input type="password" v-model="data.ip2password" name="ip2_password" placeholder="Password">
+            </div>
+        </div>
+        <div class="field" v-if="files.length">
+            <table class="ui basic table">
+                <thead>
+                    <tr>
+                        <th width="80%">Name</th>
+                        <th>Size</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in files">
+                        <td><strong>{{ item.name }}</strong></td>
+                        <td nowrap>{{ item.size/1024/1024 | toFixed }} MB</td>    
+                    </tr>
+                </tbody>
+            </table>
+            <div class="ui progress" :class="uploadStatus">
+                <div class="bar" :style="{ width: progress + '%'}">
+                    <div class="progress"></div>
+                </div>
+                <div class="label">Uploading Files</div>
+            </div>
+        </div>
+        <div class="field">
+            <button class="ui primary button" type="submit">Submit</button>
+
+            <button type="button" class="ui button" onclick="document.getElementById('file-select').click()">
+                <i class="file outline icon"></i> Select Raw Files
+                <input type="file" id="file-select" multiple v-on:change="onFileChange($event)" required />
+            </button>
+        </div>
+        </form>
+    </div>
+{% endraw %}
+{% endblock %}

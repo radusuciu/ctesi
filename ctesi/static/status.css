@@ -1,0 +1,14 @@
+@charset 'UTF-8';
+
+
+td .icon {
+    cursor:pointer;
+}
+
+.remove.icon:hover {
+    color:#DB2828;
+}
+
+.download.icon:hover {
+    color:#21BA45;
+}

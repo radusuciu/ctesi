@@ -1,0 +1,18 @@
+@charset 'UTF-8';
+html, body {
+    height:100%;
+    margin:0;
+}
+
+.container {
+    padding-top:4em;
+}
+
+#file-select {
+    min-height: 100%;
+    min-width: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    visibility: hidden;
+}

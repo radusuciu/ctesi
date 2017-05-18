@@ -1,0 +1,27 @@
+{
+    "human": {
+        "name": "UniProt_Human_Cravattlab_nonredundant2_98id_11-05-2012_reversed.fasta",
+        "user_id": 72,
+        "database_id": 641
+    },
+    "mouse": {
+        "name": "UniProt_mouse_Cravattlab_nonredundant2_98id_11-09-2012_reversed.fasta",
+        "user_id": 72,
+        "database_id": 642
+    },
+    "bcg": {
+        "name": "UniProt_M_Bovis_BCG_01-16-2014_reversed.fasta",
+        "user_id": 143,
+        "database_id": 1036
+    },
+    "tb": {
+        "name": "UniProt_H37RV_TB_08-04-2014_reversed.fasta",
+        "user_id": 176,
+        "database_id": 1487
+    },
+    "celegans": {
+        "name": "UniProt_c_elegans_01-15-2014_reversed.fasta",
+        "user_id": 186,
+        "database_id": 1627
+    }
+}
