@@ -21,7 +21,7 @@ with _secrets_path.open() as f:
 # provide a mechanism for overriding some secrets
 if _override_path.is_file():
     with _override_path.open() as f:
-        _SECRETS.update(yaml.load(f)['services'])
+        _SECRETS.update(yaml.load(f))
 
 
 
