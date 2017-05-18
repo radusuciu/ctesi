@@ -88,12 +88,8 @@ api_blueprint = Blueprint('api_blueprint', __name__,
 @api_blueprint.route('/')
 @login_required
 def get_experiments():
-    return jsonify(api.get_experiment())
+    return jsonify(api.get_user_experiments(current_user.get_id()))
 
-@api_blueprint.route('/<int:experiment_id>')
-@login_required
-def get_experiment(experiment_id):
-    return jsonify(api.get_experiment(experiment_id))
 
 @api_blueprint.route('/status/<int:experiment_id>')
 @login_required

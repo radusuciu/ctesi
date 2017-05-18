@@ -33,14 +33,12 @@ def _get_all_or_one(model, schema, _id=None):
 
 
 def get_experiment(experiment_id=None, flat=False):
-    data = _get_all_or_one(Experiment, experiment_schema, experiment_id)
+    return _get_all_or_one(Experiment, experiment_schema, experiment_id)
 
-    if 'experiments' in data:
-        experiments = data['experiments']
-    else:
-        experiments = [data]
 
-    return data
+def get_user_experiments(user_id):
+    query = Experiment.query.all()
+    return experiment_schema.dump(query, many=True).data
 
 
 def add_experiment(data):
