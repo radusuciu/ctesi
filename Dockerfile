@@ -1,4 +1,4 @@
-FROM cravattlab/cimage_base
+FROM cravattlab/cimage_base:old
 
 MAINTAINER Radu Suciu <radusuciu@gmail.com>
 
@@ -11,7 +11,8 @@ RUN apt-get update && apt-get -y install \
     python3-pip \
     python3-venv \
     cifs-utils \
-    git
+    git \
+    imagemagick
 
 RUN pip3 install wheel
 
