@@ -52,11 +52,11 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="ui progress" :class="uploadStatus">
+            <div v-if="progress" class="ui progress" :class="uploadStatus">
                 <div class="bar" :style="{ width: progress + '%'}">
                     <div class="progress"></div>
                 </div>
-                <div class="label">Uploading Files</div>
+                <div class="label">{{ uploadStatus }} Uploading Files</div>
             </div>
         </div>
         <div class="field">

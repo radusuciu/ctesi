@@ -16,3 +16,6 @@ html, body {
     top: 0;
     visibility: hidden;
 }
+.progress .label {
+    text-transform:capitalize;
+}
