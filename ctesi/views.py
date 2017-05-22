@@ -102,12 +102,6 @@ def set_experiment_status(experiment_id):
     return jsonify(api.experiment_schema.dump(experiment))
 
 
-@api_blueprint.route('/add')
-@login_required
-def add_experiment():
-    print(request.args)
-    return jsonify(API.add_experiment(request.args.to_dict()))
-
 @api_blueprint.route('/zip/<int:experiment_id>')
 @login_required
 def get_experiment_zip(experiment_id):
