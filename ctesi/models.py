@@ -79,6 +79,7 @@ class Experiment(db.Model):
     quant_params = Column(db.Text)
     annotations = Column(db.Text)
     status = Column(db.Text)
+    task_id = Column(db.Text)
 
     @hybrid_property
     def path(self):

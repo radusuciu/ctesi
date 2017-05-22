@@ -60,7 +60,10 @@ def search():
         abort(HTTPStatus.CONFLICT)
 
     # continue processing in background with celery
-    process.delay(data, search, current_user.get_id(), experiment_id, path)
+    result = process.delay(data, search, current_user.get_id(), experiment_id, path)
+
+    experiment.task_id = result.id
+    db.session.commit()
 
     return jsonify(experiment_serialized)
 
