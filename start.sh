@@ -12,8 +12,7 @@ celery -A ctesi.tasks worker --workdir="${PROJECT_HOME}" --loglevel=info --detac
 
 # run the server
 if [[ -n $DEBUG && $DEBUG == true ]]; then
-    # flask run -h 0.0.0.0 --with-threads
     flask run -h 0.0.0.0
 else
-    gunicorn --config=config/gunicorn.py cravattdb:app
+    gunicorn --config=config/gunicorn.py ctesi:app
 fi
