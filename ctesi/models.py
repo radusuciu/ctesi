@@ -100,14 +100,12 @@ class ExperimentSchema(Schema):
     date = fields.DateTime()
     modified = fields.DateTime()
     user_id = fields.Integer(required=True)
-    user = fields.Nested('UserSchema', dump_only=True)
     experiment_type = fields.String()
     organism = fields.String()
     search_params = fields.String()
     quant_params = fields.String()
     annotations = fields.String()
     status = fields.String()
-    path = fields.String(dump_only=True)
 
     @pre_load
     def _filter_experiment(self, data):
