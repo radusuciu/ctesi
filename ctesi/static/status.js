@@ -19,5 +19,6 @@ var app = new Vue({
     },
     beforeMount: function() {
         this.getExperiments();
+        setInterval(this.getExperiments.bind(this), 5000);
     }
 });
