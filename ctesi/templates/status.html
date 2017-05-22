@@ -11,6 +11,7 @@
     <table class="ui table">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Organism</th>
                 <th>Type</th>
@@ -21,11 +22,20 @@
         </thead>
         <tbody>
             <tr v-for="(e, index) in experiments" v-if="e.status !== 'done'">
+                <td>{{ e.experiment_id }}</td>
                 <td>{{ e.name }}</td>
                 <td>{{ e.organism }}</td>
                 <td>{{ e.experiment_type }}</td>
                 <td>{{ e.date }}</td>
-                <td>{{ e.status }}</td>
+                <td v-if="e.status">
+                    <div v-if="e.status.progress" class="ui top attached progress">
+                        <div class="bar" :style="{ width: e.status.progress + '%'}"></div>
+                    </div>
+                    {{ e.status.step }}
+                </td>
+                <td v-else>
+                    
+                </td>
                 <td class="right aligned">
                     <i class="remove icon" @click="remove(e, index)"></i>
                 </td>
@@ -38,6 +48,7 @@
     <table class="ui table">
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Organism</th>
                 <th>Type</th>
@@ -47,6 +58,7 @@
         </thead>
         <tbody>
             <tr v-for="(e, index) in experiments" v-if="e.status === 'done' ">
+                <td>{{ e.experiment_id }}</td>
                 <td>{{ e.name }}</td>
                 <td>{{ e.organism }}</td>
                 <td>{{ e.experiment_type }}</td>

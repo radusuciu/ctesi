@@ -35,15 +35,17 @@ def search():
 
     data['name'] = secure_filename(data['name'])
 
-    experiment = api.add_experiment({
+    (experiment_model, experiment_serialized) = api.add_experiment({
         'name': data['name'],
         'user_id': current_user.get_id(),
         'experiment_type': data['type'],
-        'organism': data['organism'],
-        'status': 'uploading'
+        'organism': data['organism']
     })
 
-    experiment_id = experiment['experiment_id']
+    experiment = experiment_model.data
+    experiment_id = experiment.experiment_id
+
+    api.update_experiment_status(experiment_id, {'step': 'uploading', 'status': None, 'progress': None})
 
     # save RAW files to disk
     # path is type pathlib.Path
@@ -60,7 +62,7 @@ def search():
     # continue processing in background with celery
     process.delay(data, search, current_user.get_id(), experiment_id, path)
 
-    return jsonify(experiment)
+    return jsonify(experiment_serialized)
 
 
 @home.route('/status')

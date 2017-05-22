@@ -7,6 +7,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from ctesi import db
 import config.config as config
 import pathlib
+import json
 
 Column = db.Column
 relationship = db.relationship
@@ -115,6 +116,11 @@ class ExperimentSchema(Schema):
     @post_load
     def _make_experiment(self, data):
         return Experiment(**data)
+
+    @post_dump(pass_many=False)
+    def _json_status(self, data):
+        if data['status']:
+            data['status'] = json.loads(data['status'])
 
     @post_dump(pass_many=True)
     def _wrap(self, data, many):

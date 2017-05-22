@@ -6,7 +6,9 @@ import sqlalchemy as sa
 import pathlib
 import zipfile
 import shutil
+import json
 import io
+
 
 experiment_schema = ExperimentSchema()
 user_schema = UserSchema()
@@ -45,12 +47,16 @@ def add_experiment(data):
     experiment = experiment_schema.load(data)
     db.session.add(experiment.data)
     db.session.commit()
-    return experiment_schema.dump(experiment.data).data
+    return (experiment, experiment_schema.dump(experiment.data).data)
 
 
 def update_experiment_status(experiment_id, status):
     experiment = Experiment.query.get(experiment_id)
-    experiment.status = status
+
+    if isinstance(status, str):
+        status = { 'step': status }
+
+    experiment.status = json.dumps(status)
     db.session.commit()
 
 

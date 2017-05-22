@@ -24,7 +24,7 @@ class Search:
         )
         return self._ip2.login(password)
 
-    def search(self, organism, experiment_type, file_paths):
+    def search(self, organism, experiment_type, file_paths, status_callback=None):
         """Initiate search on IP2."""
         params = self._get_params(experiment_type)
         # get database by file name
@@ -39,7 +39,7 @@ class Search:
             }
         )
 
-        link = self._check_search_status(job, experiment)
+        link = self._check_search_status(job, experiment, status_callback)
 
         return link
 
@@ -64,7 +64,7 @@ class Search:
 
         return database_map[organism]
 
-    def _check_search_status(self, job, experiment):
+    def _check_search_status(self, job, experiment, status_callback=None):
         polling_interval = 180
 
         # wait a bit before we poll for status
@@ -75,9 +75,18 @@ class Search:
 
             try:
                 job.status()
+
+                if status_callback:
+                    status_callback(job)
             except LookupError:
                 # job was not found, the job is finished or something went
                 # horribly wrong
+                
+                job.finished = True
+
+                if status_callback:
+                    status_callback(job)
+
                 return experiment.get_dtaselect_link()
 
             work_duration = time.clock() - start
