@@ -52,6 +52,8 @@ class _Config(object):
     SECURITY_LDAP_BIND_PASSWORD = _SECRETS['ldap']['BIND_PASSWORD']
     SECURITY_LDAP_EMAIL_FIELDNAME = 'mail'
 
+    # Flask-Security
+    SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
     SECURITY_MSG_USERID_NOT_PROVIDED = ('User ID not provided', 'error')
     SECURITY_MSG_LDAP_SERVER_DOWN = ("""The Scripps authentication server is down or not accessible, please try the
                                             last password you successfully used to login to this server.""", 'error')
