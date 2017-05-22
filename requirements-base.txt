@@ -9,4 +9,4 @@ pyyaml
 requests
 sqlalchemy
 wheel
--e git+https://github.com/radusuciu/ip2api.git@3626fa5e2bab79154449ea8ec0a2e23f0232a782#egg=ip2api
+-e git+https://github.com/radusuciu/ip2api.git#egg=ip2api
