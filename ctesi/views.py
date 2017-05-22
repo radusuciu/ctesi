@@ -90,19 +90,11 @@ api_blueprint = Blueprint('api_blueprint', __name__,
                   template_folder='templates',
                   static_folder='static')
 
+
 @api_blueprint.route('/')
 @login_required
 def get_experiments():
     return jsonify(api.get_user_experiments(current_user.get_id()))
-
-
-@api_blueprint.route('/status/<int:experiment_id>')
-@login_required
-def set_experiment_status(experiment_id):
-    experiment = api.Experiment.query.get(experiment_id)
-    experiment.status = request.args['status']
-    db.session.commit()
-    return jsonify(api.experiment_schema.dump(experiment))
 
 
 @api_blueprint.route('/zip/<int:experiment_id>')
