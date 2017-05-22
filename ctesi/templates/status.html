@@ -11,18 +11,18 @@
     <table class="ui table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Organism</th>
-                <th>Type</th>
-                <th>Date</th>
-                <th>Status</th>
+                <th class="one wide center aligned">ID</th>
+                <th class="four wide">Name</th>
+                <th class="two wide">Organism</th>
+                <th class="two wide">Type</th>
+                <th class="three wide">Date</th>
+                <th class="two wide">Status</th>
                 <th class="collapsing right aligned">Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="(e, index) in experiments" v-if="e.status.step !== 'done'">
-                <td>{{ e.experiment_id }}</td>
+                <td class="center aligned">{{ e.experiment_id }}</td>
                 <td>{{ e.name }}</td>
                 <td>{{ e.organism }}</td>
                 <td>{{ e.experiment_type }}</td>
@@ -46,17 +46,17 @@
     <table class="ui table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Organism</th>
-                <th>Type</th>
-                <th>Date</th>
+                <th class="one wide center aligned">ID</th>
+                <th class="four wide">Name</th>
+                <th class="two wide">Organism</th>
+                <th class="two wide">Type</th>
+                <th class="three wide">Date</th>
                 <th class="collapsing right aligned">Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="(e, index) in experiments" v-if="e.status === 'done' ">
-                <td>{{ e.experiment_id }}</td>
+                <td class="center aligned">{{ e.experiment_id }}</td>
                 <td>{{ e.name }}</td>
                 <td>{{ e.organism }}</td>
                 <td>{{ e.experiment_type }}</td>
