@@ -90,10 +90,10 @@ def delete_experiment(experiment_id, cancel_task_handle, force=False):
         try:
             shutil.rmtree(str(experiment.path))
         except FileNotFoundError:
-            pass
-        finally:
             db.session.delete(experiment)
             db.session.commit()
+        except:
+            api.update_experiment_status(experiment_id, 'error')
     else:
         cancel_experiment(experiment_id, cancel_task_handle)
         # setting force = True to prevent infite recursion where status is undefined
