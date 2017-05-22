@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+    ctesi:
+        build: .
+        environment:
+            DEBUG: 'false'
+            FLASK_DEBUG: 0
+        volumes:
+            - .:/home/ctesi/ctesi
+            - ../cimage-minimal:/home/ctesi/cimage-minimal
+            - /mnt/cravattdb:/home/ctesi/ctesi/ctesi/uploads/users
