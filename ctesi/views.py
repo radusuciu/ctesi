@@ -3,7 +3,7 @@ from flask import Blueprint, request, abort, render_template, jsonify, send_file
 from flask_login import login_required, current_user
 from werkzeug import secure_filename
 from .search import Search
-from .tasks import process
+from .tasks import process, cancel_task
 from http import HTTPStatus
 from ctesi import db
 import ctesi.upload as upload
@@ -129,9 +129,7 @@ def delete_experiment(experiment_id):
     experiment = api.Experiment.query.get(experiment_id)
 
     if experiment.user_id == int(current_user.get_id()):
-        api.delete_experiment(experiment_id)
+        api.delete_experiment(experiment_id, cancel_task)
         return 'ok'
     else:
         return 'insufficient permissions'
-
-

@@ -31,6 +31,10 @@ def convert(path, success_callback=None, status_callback=None):
         time.sleep(polling_interval - work_duration)
 
 
+def cancel_convert(path):
+    return requests.get(config.CONVERT_URL + '/abort/' + path)
+
+
 def get_status(path):
     r = requests.get(config.CONVERT_URL + '/status/' + path)
     return r.json()

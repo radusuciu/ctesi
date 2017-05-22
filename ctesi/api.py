@@ -2,6 +2,7 @@
 from ctesi import db
 from ctesi.models import Experiment, ExperimentSchema, User, UserSchema
 from flask import send_file
+from .convert import cancel_convert
 import sqlalchemy as sa
 import pathlib
 import zipfile
@@ -76,17 +77,45 @@ def get_zip(experiment_id):
     return memory_file
 
 
-def delete_experiment(experiment_id):
+def delete_experiment(experiment_id, cancel_task_handle, force=False):
     experiment = Experiment.query.get(experiment_id)
+    experiment_serialized = get_experiment(experiment_id)
 
-    if experiment.status in ('done', 'cancelled'):
-        shutil.rmtree(experiment.path)
-        db.session.delete(experiment)
-        db.session.commit()
+    try:
+        status = experiment_serialized['status']['step']
+    except:
+        status = ''
+
+    if force or status in ('done', 'error', 'cancelled'):
+        try:
+            shutil.rmtree(str(experiment.path))
+        except FileNotFoundError:
+            pass
+        finally:
+            db.session.delete(experiment)
+            db.session.commit()
     else:
-        cancel_experiment(experiment_id)
-        delete_experiment(experiment_id)
+        cancel_experiment(experiment_id, cancel_task_handle)
+        # setting force = True to prevent infite recursion where status is undefined
+        delete_experiment(experiment_id, cancel_task_handle, force=True)
 
 
-def cancel_experiment(experiment_id):
+def cancel_experiment(experiment_id, cancel_task_handle):
+    experiment = Experiment.query.get(experiment_id)
+    experiment_serialized = get_experiment(experiment_id)
+
+    if experiment.task_id:
+        res = cancel_task_handle(experiment.task_id)
+        experiment.task_id = ''
+        db.session.commit()
+
+    try:
+        step = experiment_serialized['status']['step']
+
+        if step == 'converting':
+            path = str(experiment.user_id) + '/' + str(experiment_id)
+            res = cancel_convert(path)
+    except:
+        pass
+
     update_experiment_status(experiment_id, 'cancelled')
