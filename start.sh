@@ -8,6 +8,7 @@ source venv/bin/activate
 pip install -r requirements.txt 
 
 # start celery daemon
+rm celeryd.pid celery.log
 celery -A ctesi.tasks worker --workdir="${PROJECT_HOME}" --loglevel=info --logfile=celery.log --detach
 
 # run the server
