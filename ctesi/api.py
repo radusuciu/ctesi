@@ -40,7 +40,7 @@ def get_experiment(experiment_id=None, flat=False):
 
 
 def get_user_experiments(user_id):
-    query = Experiment.query.all()
+    query = Experiment.query.filter_by(user_id=user_id)
     return experiment_schema.dump(query, many=True).data
 
 
