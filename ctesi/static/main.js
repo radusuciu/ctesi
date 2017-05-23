@@ -1,4 +1,5 @@
 Vue.use(VueResource);
+Vue.use(VeeValidate);
 
 var app = new Vue({
     el: '#app',
@@ -37,6 +38,12 @@ var app = new Vue({
         },
 
         _submitForm: function(form, files, finishCallback, progressCallack) {
+            this.$validator.validateAll();
+
+            if (this.errors.any()) {
+                return;
+            }
+
             var url = '/';
             var formData = new FormData();
             var xhr = new XMLHttpRequest();

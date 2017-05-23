@@ -8,21 +8,21 @@
         <div class="sub header">A sytem for automatic processing of mass spec data.</div>
     </h1>
 
-    <form class="ui form" v-on:submit.prevent="onSubmit">
-        <div class="field">
+    <form class="ui form" :class="{ error: errors.any() }" v-on:submit.prevent="onSubmit">
+        <div class="field" :class="{ error: errors.has('experiment_name') }">
             <label>Experiment name</label>
-            <input type="text" name="experiment_name" placeholder="ABC123" v-model="data.name">
+            <input type="text" name="experiment_name" placeholder="ABC123" v-model="data.name" v-validate="'required'">
         </div>
-        <div class="field">
+        <div class="field" :class="{ error: errors.has('experiment_type') }">
             <label>Experiment type</label>
-            <select class="ui dropdown" v-model="data.type" name="experiment_type">
+            <select class="ui dropdown" v-model="data.type" name="experiment_type" v-validate="'required'">
                 <option value="mudpit">mudpit</option>
                 <option value="redime">redime</option>
             </select>
         </div>
-        <div class="field">
+        <div class="field" :class="{ error: errors.has('organism') }">
             <label>Organism</label>
-            <select class="ui dropdown" v-model="data.organism" name="organism">
+            <select class="ui dropdown" v-model="data.organism" name="organism" v-validate="'required'">
                 <option value="human">Human</option>
                 <option value="mouse">Mouse</option>
                 <option value="celegans">C. elegans</option>
@@ -31,13 +31,13 @@
             </select>
         </div>
         <div class="fields">
-            <div class="field">
+            <div class="field" :class="{ error: errors.has('ip2_username') }">
                 <label>IP2 Username</label>
-                <input type="text" v-model="data.ip2username" name="ip2_username" placeholder="Username">
+                <input type="text" v-model="data.ip2username" name="ip2_username" placeholder="Username" v-validate="'required'">
             </div>
-            <div class="field">
+            <div class="field" :class="{ error: errors.has('ip2_password') }">
                 <label>IP2 Password:</label>
-                <input type="password" v-model="data.ip2password" name="ip2_password" placeholder="Password">
+                <input type="password" v-model="data.ip2password" name="ip2_password" placeholder="Password" v-validate="'required'">
             </div>
         </div>
         <div class="field" v-if="files.length">
@@ -63,11 +63,11 @@
             </div>
         </div>
         <div class="field">
+            <span class="ui error message">{{ errors.first('file-select') }}</span>
             <button class="ui primary button" type="submit">Submit</button>
-
             <button type="button" class="ui button" onclick="document.getElementById('file-select').click()">
                 <i class="file outline icon"></i> Select Raw Files
-                <input type="file" id="file-select" multiple v-on:change="onFileChange($event)" required />
+                <input type="file" name="file-select" id="file-select" multiple v-on:change="onFileChange($event)" data-vv-as="file upload" v-validate="'required|ext:raw,RAW'" />
             </button>
         </div>
         </form>
