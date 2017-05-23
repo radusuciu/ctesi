@@ -55,7 +55,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(e, index) in experiments" v-if="e.status === 'done' ">
+            <tr v-for="(e, index) in experiments" v-if="e.status.step === 'done' ">
                 <td class="center aligned">{{ e.experiment_id }}</td>
                 <td>{{ e.name }}</td>
                 <td>{{ e.organism }}</td>
