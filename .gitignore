@@ -9,6 +9,7 @@ mount-nfs.sh
 venv
 ctesi.db
 celery.pid
+celery.log
 
 # Python things
 *.pyc
