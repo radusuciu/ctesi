@@ -17,6 +17,15 @@ var app = new Vue({
             });
         }
     },
+    filters: {
+        prettyDate: function(dateString) {
+            var date = new Date(dateString);
+            return date.toLocaleDateString(
+                'en-US', 
+                { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }
+            );
+        }
+    },
     beforeMount: function() {
         this.getExperiments();
         setInterval(this.getExperiments.bind(this), 5000);
