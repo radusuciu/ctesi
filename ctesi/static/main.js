@@ -72,4 +72,5 @@ var app = new Vue({
 
 $(function() {
     $('.ui.checkbox').checkbox();
+    $('.ui.dropdown').dropdown();
 });

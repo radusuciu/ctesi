@@ -22,9 +22,12 @@
         </div>
         <div class="field">
             <label>Organism</label>
-            <select v-model="data.organism" name="organism">
-                <option value="human">human</option>
-                <option value="mouse">mouse</option>
+            <select class="ui dropdown" v-model="data.organism" name="organism">
+                <option value="human">Human</option>
+                <option value="mouse">Mouse</option>
+                <option value="celegans">C. elegans</option>
+                <option value="tb">M. tuberculosis</option>
+                <option value="bcg">M. tb. (BCG)</option>
             </select>
         </div>
         <div class="fields">
