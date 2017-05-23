@@ -21,9 +21,17 @@ var app = new Vue({
         },
 
         onSubmit: function() {
+            this.$validator.validateAll();
+
+            if (this.errors.any()) {
+                return;
+            }
+
             var onFinish = function(response, xhr) {
                 if (xhr.status === 200) {
                     this.uploadStatus = 'success';
+                } else if (xhr.status === 401) {
+                    this.errors.add('ip2_password', 'Could not login to IP2 with provided credentials.', 'auth');
                 } else {
                     this.uploadStatus = 'error';
                 }
@@ -38,12 +46,6 @@ var app = new Vue({
         },
 
         _submitForm: function(form, files, finishCallback, progressCallack) {
-            this.$validator.validateAll();
-
-            if (this.errors.any()) {
-                return;
-            }
-
             var url = '/';
             var formData = new FormData();
             var xhr = new XMLHttpRequest();
