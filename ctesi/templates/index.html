@@ -17,8 +17,10 @@
             <label>Experiment type</label>
             <select class="ui dropdown" v-model="data.type" name="experiment_type" v-validate="'required'">
                 <option value="">Experiment Type</option>
-                <option value="mudpit">mudpit</option>
-                <option value="redime">redime</option>
+                <option value="mudpit">SILAC MudPIT</option>
+                <option value="redime">ReDiMe</option>
+                <option value="isotop">isoTOP</option>
+                <option value="n15">N15</option>
             </select>
         </div>
         <div class="field" :class="{ error: errors.has('organism') }">
