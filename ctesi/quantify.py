@@ -28,7 +28,7 @@ def cimage(params_path, dta_folder_path, name, hl_flag):
     if hl_flag:
         name = '{}_HL'.format(name)
 
-    subprocess.Popen([
+    return subprocess.Popen([
         'cimage2',
         params_path,
         name
