@@ -12,3 +12,7 @@ td .icon {
 .download.icon:hover {
     color:#21BA45;
 }
+
+.ui.top.attached.progress {
+    background:rgba(0, 0, 0, 0.1);
+}
