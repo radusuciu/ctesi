@@ -60,6 +60,15 @@ class _Config(object):
                                             last password you successfully used to login to this server.""", 'error')
     SECURITY_USER_IDENTITY_ATTRIBUTES = ['email', 'username']
 
+    # Flask-Mail
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USE_TLS=True,
+    MAIL_USE_SSL=False,
+    MAIL_DEFAULT_SENDER = _SECRETS['email']['username'],
+    MAIL_USERNAME = _SECRETS['email']['username'],
+    MAIL_PASSWORD = _SECRETS['email']['password']
+
 
 
 class _DevelopmentConfig(_Config):
