@@ -21,7 +21,7 @@ var app = new Vue({
         prettyDate: function(dateString) {
             var date = new Date(dateString);
             return date.toLocaleDateString(
-                'en-US', 
+                'en-US',
                 { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }
             );
         }

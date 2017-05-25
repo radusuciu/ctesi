@@ -24,3 +24,32 @@ html, body {
 .progress .bar {
     transition-duration:300ms;
 }
+
+.diff-mod .aa {
+    text-transform:uppercase;
+}
+
+.file-upload.field {
+    margin-top:1em!important;
+}
+
+.advanced {
+    margin-bottom:1em;
+}
+
+.close.icon {
+    cursor:pointer;
+}
+
+.close.icon:hover {
+    color:#DB2828;
+}
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}

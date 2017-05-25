@@ -45,6 +45,71 @@
             </div>
         </div>
         <div class="ui error message">{{ errors.first('ip2_password:auth') }}</div>
+
+        <div class="advanced" v-if="advanced">
+            <div class="ui horizontal divider">
+                <i class="settings icon"></i>
+                Advanced Options
+            </div>
+
+            <h3 class="ui header">
+                Differential modifications
+                <diff-mod-picker
+                    v-show="!diffMods.length"
+                    @pick="addDiffMod"
+                ></diff-mod-picker>
+                <div class="sub header">Cysteine alkylation is assumed. Elemental composition will be used by cimage.</div>
+            </h3>
+
+            <table v-if="diffMods.length" class="ui table">
+                <thead>
+                    <tr class="center aligned">
+                        <th class="two wide left aligned">Amino acid(s)</th>
+                        <th class="one wide">C</th>
+                        <th class="one wide">H</th>
+                        <th class="one wide">O</th>
+                        <th class="one wide">N</th>
+                        <th class="one wide">S</th>
+                        <th class="one wide">P</th>
+                        <th class="one wide"><sup>13</sup>C</th>
+                        <th class="one wide"><sup>2</sup>H</th>
+                        <th class="one wide"><sup>15</sup>N</th>
+                        <th class="one wide">Light</th>
+                        <th class="one wide">Heavy</th>
+                        <th class="two wide">Mass</th>
+                        <th class="one wide"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        is="diff-mod"
+                        v-for="(mod, index) in diffMods"
+                        :init-comp="mod.comp"
+                        :init-aa="mod.aa"
+                        :index="mod.index"
+                        :key="mod.index"
+                        @remove="removeDiffMod(index)"
+                        @state="updateState"
+                    ></tr>
+                </tbody>
+                <tfoot>
+                    <tr class="collapsing">
+                        <th colspan="14">
+                            <diff-mod-picker @pick="addDiffMod"></diff-mod-picker>
+                        </th>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="ui divider"></div>
+        </div>
+        <div v-else>
+            <button type="button" class="ui labeled icon button" @click="advanced = true">
+                <i class="settings icon"></i>
+                Advanced Options
+            </button>
+        </div>
+
         <div class="field" v-if="files.length">
             <table class="ui basic table">
                 <thead>
@@ -67,7 +132,7 @@
                 <div class="label">{{ uploadStatus }} Uploading Files</div>
             </div>
         </div>
-        <div class="field">
+        <div class="ui file-upload field">
             <span class="ui error message">{{ errors.first('file-select') }}</span>
             <button class="ui primary button" type="submit">Submit</button>
             <button type="button" class="ui button" onclick="document.getElementById('file-select').click()">
@@ -75,7 +140,7 @@
                 <input type="file" name="file-select" id="file-select" multiple v-on:change="onFileChange($event)" data-vv-as="file upload" v-validate="'required|ext:raw,RAW'" />
             </button>
         </div>
-        </form>
-    </div>
+    </form>
+</div>
 {% endraw %}
 {% endblock %}
