@@ -4,12 +4,15 @@ from ctesi.ldap import LDAPUserDatastore, LDAPLoginForm
 from http import HTTPStatus
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security
+from flask_migrate import Migrate
 import config.config as config
 
 app = Flask(__name__)
 app.config.from_object(config.config)
 
 db = SQLAlchemy(app)
+
+migrate = Migrate(app, db)
 
 # Register blueprints
 from ctesi.views import home, users, api_blueprint
