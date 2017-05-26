@@ -6,6 +6,7 @@ from .search import Search
 from .tasks import process, cancel_task
 from http import HTTPStatus
 from ctesi import db
+from .utils import validate_search_params
 import ctesi.upload as upload
 import ctesi.api as api
 import json
@@ -37,7 +38,7 @@ def search():
 
     try:
         diff_mods = data['diffMods']
-        search_params = { 'diff_mods': diff_mods }
+        search_params = validate_search_params({ 'diff_mods': diff_mods })
     except:
         search_params = None
 

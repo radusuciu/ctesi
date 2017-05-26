@@ -1,6 +1,5 @@
 """Perform search of dataset on IP2."""
 from ip2api import IP2
-from ctesi.utils import validate_protein
 import config.config as config
 import pathlib
 import json
@@ -56,12 +55,7 @@ class Search:
 
             if search_params and 'diff_mods' in search_params:
                 diff_mods = search_params['diff_mods']
-                new_mods = [
-                    '{} {} '.format(mod['mass'], ''.join(set(mod['aa']))) 
-                    for mod in diff_mods 
-                    if float(mod['mass']) > 0
-                    and validate_protein(mod['aa'])
-                ]
+                new_mods = ['{} {} '.format(mod['mass'], mod['aa']) for mod in diff_mods]
                 params['sp.diffmods'] = new_mods
 
         return params

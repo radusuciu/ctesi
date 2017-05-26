@@ -11,3 +11,18 @@ def validate_sequence(sequence, valid_chars):
 
 def validate_protein(sequence):
     return validate_sequence(sequence, AA_DELCHARS)
+
+def validate_search_params(search_params):
+    if 'diff_mods' in search_params:
+        diff_mods = search_params['diff_mods']
+    else:
+        return None
+
+    valid_mods = []
+
+    for mod in diff_mods:
+        if float(mod['mass']) > 0 and validate_protein(mod['aa']):
+            mod['aa'] = ''.join(set(mod['aa']))
+            valid_mods.append(mod)
+
+    return { 'diff_mods': valid_mods }
