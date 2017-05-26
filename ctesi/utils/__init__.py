@@ -71,6 +71,11 @@ class CimageParams:
         self._heavy = heavy
 
 
+    @property
+    def chem_headers(self):
+        return list(next(iter(self.light.values())).keys())
+
+
     def read(self, raw):
         # reset rather than append
         self.data = OrderedDict()
@@ -110,7 +115,7 @@ class CimageParams:
                 if row:
                     table[row[0]] = OrderedDict(zip(headers, row[1:]))
 
-        return table    
+        return table
 
     def write_chem_tables(self, light_path=None, heavy_path=None):
         self._write_chem_table(light_path or self['light.chem.table'], self.light)
