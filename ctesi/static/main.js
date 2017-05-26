@@ -22,9 +22,9 @@ var predefinedDiffMods = {
     'Formylation': { comp: { c: 1, o: 1}, aa: 'k' },
     'Carboxylation': { comp: { c: 1, o: 2 }, aa: 'e' },
     'Hexose': { comp: { c: 6, h: 10, o: 5}, aa: 'nsy' },
-    'Guanidination': { comp: { c: 1 , h: 2, n: 2}, aa: 'k' },
+    'Guanidination': { comp: { c: 1, h: 2, n: 2}, aa: 'k' },
     'Hydroxylation': { comp: { o: 1 }, aa: 'pkdnry' },
-    'Myristoylation': { comp: { c: 14 , h: 26, o: 1}, aa: 'kc' },
+    'Myristoylation': { comp: { c: 14, h: 26, o: 1}, aa: 'kc' },
     'HexNAc': { comp: { c: 8, h: 15, o: 6, n: 1 }, aa: 'n' },
     'Propionamide': { comp: { c: 3, h: 5, n: 1, o: 1 }, aa: 'c' },
     'S-pyridylethyl': { comp: { c: 7, h: 7, n: 1 }, aa: 'c' },
@@ -226,6 +226,7 @@ var app = new Vue({
             }.bind(this);
 
             this.uploadStatus = '';
+            this.data.diffMods = this.diffMods;
             this._submitForm(this.data, this.files, onFinish, onProgress);
         },
 

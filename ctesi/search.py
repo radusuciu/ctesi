@@ -1,5 +1,6 @@
 """Perform search of dataset on IP2."""
 from ip2api import IP2
+from ctesi.utils import validate_protein
 import config.config as config
 import pathlib
 import json
@@ -24,9 +25,9 @@ class Search:
         )
         return self._ip2.login(password)
 
-    def search(self, organism, experiment_type, file_paths, status_callback=None):
+    def search(self, organism, experiment_type, file_paths, status_callback=None, search_params=None):
         """Initiate search on IP2."""
-        params = self._get_params(experiment_type)
+        params = self._get_params(experiment_type, search_params)
         # get database by file name
         database = self._ip2.get_database(self._get_database_path(organism)['name'])
 
@@ -43,7 +44,7 @@ class Search:
 
         return link
 
-    def _get_params(self, experiment_type):
+    def _get_params(self, experiment_type, search_params=None):
         with SEARCH_PARAMS_PATH.joinpath('search_params.json').open() as f:
             params_map = json.loads(f.read())
 
@@ -52,6 +53,16 @@ class Search:
 
         with SEARCH_PARAMS_PATH.joinpath(params_map[experiment_type]).open() as f:
             params = json.loads(f.read())
+
+            if search_params and 'diff_mods' in search_params:
+                diff_mods = search_params['diff_mods']
+                new_mods = [
+                    '{} {} '.format(mod['mass'], ''.join(set(mod['aa']))) 
+                    for mod in diff_mods 
+                    if float(mod['mass']) > 0
+                    and validate_protein(mod['aa'])
+                ]
+                params['sp.diffmods'] = new_mods
 
         return params
 

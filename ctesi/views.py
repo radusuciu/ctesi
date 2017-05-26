@@ -35,11 +35,18 @@ def search():
 
     data['name'] = secure_filename(data['name'])
 
+    try:
+        diff_mods = data['diffMods']
+        search_params = { 'diff_mods': diff_mods }
+    except:
+        search_params = None
+
     (experiment_model, experiment_serialized) = api.add_experiment({
         'name': data['name'],
         'user_id': current_user.get_id(),
         'experiment_type': data['type'],
-        'organism': data['organism']
+        'organism': data['organism'],
+        'search_params': json.dumps(search_params)
     })
 
     experiment = experiment_model.data
@@ -60,7 +67,7 @@ def search():
         abort(HTTPStatus.CONFLICT)
 
     # continue processing in background with celery
-    result = process.delay(data, search, current_user.get_id(), experiment_id, path)
+    result = process.delay(data, search, current_user.get_id(), experiment_id, path, search_params)
 
     experiment.task_id = result.id
     db.session.commit()

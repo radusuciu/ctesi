@@ -12,7 +12,7 @@ celery.conf.update(accept_content=['json', 'pickle'])
 
 
 @celery.task(serializer='pickle')
-def process(data, search, user_id, experiment_id, path):
+def process(data, search, user_id, experiment_id, path, search_params=None):
     # convert .raw to .ms2
     # removing first bit of file path since that is the upload folder
     corrected_path = pathlib.PurePath(*path.parts[path.parts.index('users') + 1:])
@@ -35,7 +35,8 @@ def process(data, search, user_id, experiment_id, path):
         data['organism'],
         data['type'],
         [f for f in converted_paths if f.suffix == '.ms2'],
-        status_callback=functools.partial(update_search_status, experiment_id)
+        status_callback=functools.partial(update_search_status, experiment_id),
+        search_params=search_params
     )
 
     # run things through cimage
