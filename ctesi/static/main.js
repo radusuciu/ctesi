@@ -5,8 +5,9 @@ Vue.use(VeeValidate);
 
 
 var predefinedDiffMods = {
+    'Isotop': [{ comp: { c: 21, h: 36, o: 4, n: 8}, aa: 'c' , light: true }, { comp: { c: 16, h: 36, o: 4, n: 7, c13: 5, n15: 1}, aa: 'c' , heavy: true}],
     'Acetylation': { comp: { c: 2, h: 2, o: 1 }, aa: 'k' },
-    'Deamidation': { comp: { 'n': -1, h: -1, o: 1 }, aa: 'nq'},
+    'Deamidation': { comp: { 'n': -1, h: -1, o: 1 }, aa: 'nq' },
     'Methyl ester': { comp: { c: 1, h: 2 }, aa: 'de' },
     'Oxidation': { comp: { o: 1 }, aa: 'm'},
     'Oxidation': { comp: { o: 1 }, aa: 'hw' },
