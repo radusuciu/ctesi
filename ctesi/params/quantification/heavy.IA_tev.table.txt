@@ -1,4 +1,3 @@
-!!! isoTOP-ABPP with IA probe and tev tag !!!
 	C	H	O	N	S	P	N15	H2	C13
 A	3	5	1	1	0	0	0	0	0
 C	5	8	2	2	1	0	0	0	0
