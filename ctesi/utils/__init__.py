@@ -27,6 +27,11 @@ def validate_search_params(search_params):
             mod['aa'] = ''.join(set(mod['aa']))
             valid_mods.append(mod)
 
+            mod['comp'] = dict(zip(
+                map(str.upper, mod['comp'].keys()),
+                mod['comp'].values()
+            ))
+
     return { 'diff_mods': valid_mods }
 
 
