@@ -57,6 +57,12 @@ def setup_dta_folders(name, path, dta_link, search_params=None):
     r = requests.get(dta_link)
     dta_content = r.text
 
+    if search_params and 'diff_mods' in search_params:
+        symbol_mod_map = _symbolify_diff_mods(search_params['diff_mods'])[0]
+        for symbol, mods in symbol_mod_map.items():
+            for mod in mods:
+                dta_content.replace('({})'.format(mod['mass']), symbol)
+
     dta_path = path.joinpath('dta')
     dta_path.mkdir()
 
