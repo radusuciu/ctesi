@@ -86,6 +86,8 @@
                         v-for="(mod, index) in diffMods"
                         :init-comp="mod.comp"
                         :init-aa="mod.aa"
+                        :init-light="mod.light"
+                        :init-heavy="mod.heavy"
                         :index="mod.index"
                         :key="mod.index"
                         @remove="removeDiffMod(index)"

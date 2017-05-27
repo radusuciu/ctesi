@@ -105,13 +105,13 @@ Vue.component('diff-mod', {
             <td><i @click="remove()" class="icon close"></i></td>
         </tr>
     `,
-    props: ['initComp', 'initAa', 'index'],
+    props: ['initComp', 'initAa', 'index', 'initLight', 'initHeavy'],
     data: function() {
         var defaultComp = { c: 0, h: 0, o: 0, n: 0, p: 0, s: 0, c13: 0, h2: 0, n15: 0 };
 
         return {
-            light: false,
-            heavy: false,
+            light: this.initLight,
+            heavy: this.initHeavy,
             aa: this.initAa || '',
             comp: Vue.util.extend(defaultComp, this.initComp),
         };
