@@ -41,7 +41,7 @@ def process(data, search, user_id, experiment_id, path, search_params=None):
 
     # run things through cimage
     api.update_experiment_status(experiment_id, 'cimage')
-    quant_result = quantify(data['name'], dta_select_link, data['type'], path)
+    quant_result = quantify(data['name'], dta_select_link, data['type'], path, search_params)
 
     # clean up the big files
     if quant_result:
