@@ -1,4 +1,4 @@
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 import csv
 
 VALID_NUCLEIC_ACIDS = 'ACGTNUKSYMWRBDHV'
@@ -33,7 +33,12 @@ def validate_search_params(search_params):
 
 class CimageParams:
 
-    CimageParam = namedtuple('CimageParam', ['comment', 'key', 'value'])
+    class CimageParam:
+        def __init__(self, comment, key, value):
+            self.comment = comment
+            self.key = key
+            self.value = value
+
     _comment_char = '!'
 
     def __init__(self, path=None, data=None):
@@ -163,3 +168,8 @@ class CimageParams:
 
     def __getitem__(self, key):
         return self.data[key].value
+
+
+    def __setitem__(self, key, value):
+        self.data[key].value = value
+        return self
