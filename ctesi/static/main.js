@@ -186,8 +186,15 @@ var app = new Vue({
 
         addDiffMod: function(mod) {
             mod = mod || {};
-            mod.index = _.uniqueId();
-            this.diffMods.push(mod);
+
+            if (!_.isArray(mod)) {
+                mod = [ mod ]
+            }
+
+            for (var i = 0, n = mod.length; i < n; i++) {
+                mod[i].index = _.uniqueId();
+                this.diffMods.push(mod[i]);
+            }
         },
 
         removeDiffMod: function(index) {
