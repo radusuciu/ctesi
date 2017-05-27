@@ -182,12 +182,9 @@ var app = new Vue({
     },
     watch: {
         'data.type': function(newType) {
-            if (!this.advanced) return;
-
-            this.removeAllDiffMods();
-
-            if (predefinedDiffMods.hasOwnProperty(newType)) {
-                this.addDiffMod(predefinedDiffMods[newType]);
+            if (this.advanced) {
+                this.removeAllDiffMods();
+                this.showAdvanced();
             }
         }
     },
@@ -224,6 +221,14 @@ var app = new Vue({
 
             if (mod) {
                 mod = Vue.util.extend(mod, updated);
+            }
+        },
+
+        showAdvanced: function() {
+            this.advanced = true;
+
+            if (predefinedDiffMods.hasOwnProperty(this.data.type)) {
+                this.addDiffMod(predefinedDiffMods[this.data.type]);
             }
         },
 
