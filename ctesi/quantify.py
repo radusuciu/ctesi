@@ -1,7 +1,7 @@
 """Provides interface to CIMAGE."""
 from .utils import CimageParams
 from copy import deepcopy
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import config.config as config
 import pathlib
 import requests
