@@ -58,7 +58,7 @@
                     v-show="!diffMods.length"
                     @pick="addDiffMod"
                 ></diff-mod-picker>
-                <div class="sub header">Cysteine alkylation is assumed. Elemental composition will be used by cimage.</div>
+                <div class="sub header">Preset diff-mods are taken directly from IP2. Adjustments may be required to account for cysteine alkylation. Elemental composition will be used by cimage.</div>
             </h3>
 
             <table v-if="diffMods.length" class="ui table">
