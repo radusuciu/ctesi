@@ -24,16 +24,21 @@ def validate_search_params(search_params):
 
     for mod in diff_mods:
         if float(mod['mass']) > 0 and validate_protein(mod['aa']):
+            # make sure we aren't repeating amino acids
             mod['aa'] = ''.join(set(mod['aa']))
             valid_mods.append(mod)
 
+            # keep composition keyed by uppercase amino acids for consistency
             mod['comp'] = dict(zip(
                 map(str.upper, mod['comp'].keys()),
                 mod['comp'].values()
             ))
 
-    return { 'diff_mods': valid_mods }
+            # make sure we have light and heavy options set
+            mod['light'] = mod.get('light') or False
+            mod['heavy'] = mod.get('heavy') or False
 
+    return { 'diff_mods': valid_mods }
 
 
 class CimageParams:
