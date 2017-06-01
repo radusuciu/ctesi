@@ -1,15 +1,18 @@
 """Blueprint for API methods."""
-from flask import Blueprint, request, abort, render_template, jsonify, send_file
+from flask import Blueprint, request, abort, render_template, jsonify, send_file, session
 from flask_login import login_required, current_user
 from werkzeug import secure_filename
 from .search import Search
 from .tasks import process, cancel_task
 from http import HTTPStatus
 from ctesi import db
+from ip2api import IP2
 from .utils import validate_search_params
+import config.config as config
 import ctesi.upload as upload
 import ctesi.api as api
 import json
+import pickle
 
 
 home = Blueprint('home', __name__,
@@ -103,6 +106,22 @@ api_blueprint = Blueprint('api_blueprint', __name__,
 @login_required
 def get_experiments():
     return jsonify(api.get_user_experiments(current_user.get_id()))
+
+
+@api_blueprint.route('/ip2_auth', methods=['POST'])
+@login_required
+def ip2_auth():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    remember = request.form.get('remember')
+
+    ip2 = IP2(config.IP2_URL, username, password)
+
+    if ip2.logged_in and remember:
+        session['ip2_username'] = username
+        session['ip2_cookie'] = pickle.dumps(ip2._cookies)
+
+    return jsonify(ip2.logged_in)
 
 
 @api_blueprint.route('/zip/<int:experiment_id>')
