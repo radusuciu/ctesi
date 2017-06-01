@@ -108,10 +108,16 @@ Vue.component('diff-mod', {
     props: ['initComp', 'initAa', 'index', 'initLight', 'initHeavy'],
     data: function() {
         var defaultComp = { c: 0, h: 0, o: 0, n: 0, p: 0, s: 0, c13: 0, h2: 0, n15: 0 };
+        var defaultLight, defaultHeavy;
+
+        // assume we want the diff mod to apply to both heavy and light if nothing is passed
+        if (this.initLight === undefined && this.initHeavy === undefined) {
+            defaultLight = defaultHeavy = true
+        }
 
         return {
-            light: this.initLight,
-            heavy: this.initHeavy,
+            light: this.initLight || defaultLight,
+            heavy: this.initHeavy || defaultHeavy,
             aa: this.initAa || '',
             comp: Vue.util.extend(defaultComp, this.initComp),
         };
