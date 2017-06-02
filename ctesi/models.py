@@ -121,6 +121,8 @@ class ExperimentSchema(Schema):
     def _json_status(self, data):
         if data['status']:
             data['status'] = json.loads(data['status'])
+        if data['search_params']:
+            data['search_params'] = json.loads(data['search_params'])
 
     @post_dump(pass_many=True)
     def _wrap(self, data, many):
