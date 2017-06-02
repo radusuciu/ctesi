@@ -39,6 +39,10 @@ def get_experiment(experiment_id=None, flat=False):
     return _get_all_or_one(Experiment, experiment_schema, experiment_id)
 
 
+def get_raw_experiment(experiment_id):
+    return Experiment.query.get(experiment_id)
+
+
 def get_user_experiments(user_id):
     query = Experiment.query.filter_by(user_id=user_id)
     return experiment_schema.dump(query, many=True).data
@@ -119,3 +123,7 @@ def cancel_experiment(experiment_id, cancel_task_handle):
         pass
 
     update_experiment_status(experiment_id, 'cancelled')
+
+
+def get_user(user_id):
+    return User.query.get(user_id)
