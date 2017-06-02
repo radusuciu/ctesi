@@ -238,12 +238,34 @@ var app = new Vue({
             }
         },
 
-        onSubmit: function() {
+        onSubmit:function() {
             this.$validator.validateAll();
 
-            if (this.errors.any()) {
-                return;
-            }
+            this.verifyIP2(this._onSubmit, function(response) {
+                this.errors.add('ip2_password', 'Could not login to IP2 with provided credentials.', 'auth');
+            }.bind(this));
+        },
+
+        verifyIP2: function(onSuccess, onError) {
+            this.$http.post('/api/ip2_auth', {
+                username: this.data.ip2username,
+                password: this.data.ip2password,
+            }, { emulateJSON: true }).then(function(response) {
+                if (response.data) {
+                    onSuccess(response);
+                } else {
+                    onError(response);
+                }
+            }, onError);
+        },
+
+        _isValid: function() {
+            this.$validator.validateAll();
+            return !this.errors.any();
+        },
+
+        _onSubmit: function() {
+            if (!this._isValid()) return;
 
             var onFinish = function(response, xhr) {
                 if (xhr.status === 200) {
