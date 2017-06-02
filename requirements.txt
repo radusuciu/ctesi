@@ -15,7 +15,7 @@ Flask-Security==1.7.5
 Flask-SQLAlchemy==2.2
 Flask-WTF==0.14.2
 gunicorn==19.7.1
--e git+https://github.com/radusuciu/ip2api.git@98e2f7fd7cc3aa42611f1077abe803177942e8e7#egg=ip2api
+-e git+https://github.com/radusuciu/ip2api.git@6559defa352a41c43d3e35562f39ef55fcd45f1a#egg=ip2api
 itsdangerous==0.24
 Jinja2==2.9.6
 kombu==4.0.2
