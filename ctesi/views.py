@@ -1,6 +1,7 @@
 """Blueprint for API methods."""
 from flask import Blueprint, request, abort, render_template, jsonify, send_file, session
 from flask_login import login_required, current_user
+from flask_principal import Permission, RoleNeed
 from werkzeug import secure_filename
 from .search import Search
 from .tasks import process, cancel_task
@@ -13,6 +14,8 @@ import ctesi.upload as upload
 import ctesi.api as api
 import json
 import pickle
+
+admin_permission = Permission(RoleNeed('admin'))
 
 
 home = Blueprint('home', __name__,
@@ -86,6 +89,13 @@ def status():
     return render_template('status.html', user=user_id)
 
 
+@home.route('/admin')
+@admin_permission.require(http_exception=404)
+def admin():
+    user_id = current_user.get_id()
+    return render_template('admin.html', user=user_id)
+
+
 users = Blueprint('users', __name__,
                   template_folder='templates',
                   static_folder='static')
@@ -106,6 +116,12 @@ api_blueprint = Blueprint('api_blueprint', __name__,
 @login_required
 def get_experiments():
     return jsonify(api.get_user_experiments(current_user.get_id()))
+
+
+@api_blueprint.route('/admin')
+@admin_permission.require(http_exception=404)
+def get_all_experiments():
+    return jsonify(api.get_all_experiments())
 
 
 @api_blueprint.route('/ip2_auth', methods=['POST'])

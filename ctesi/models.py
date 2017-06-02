@@ -90,7 +90,7 @@ class Experiment(db.Model):
         )
 
     # bidirectional many-to-one relationships corresponding to foreign keys above
-    user = relationship('User', backref='experiments', lazy='joined')
+    user = relationship('User', lazy='joined')
 
 
 class ExperimentSchema(Schema):
@@ -107,6 +107,7 @@ class ExperimentSchema(Schema):
     quant_params = fields.String()
     annotations = fields.String()
     status = fields.String()
+    user = fields.Nested('UserSchema', dump_only=True)
 
     @pre_load
     def _filter_experiment(self, data):

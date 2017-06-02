@@ -11,7 +11,8 @@ import json
 import io
 
 
-experiment_schema = ExperimentSchema()
+experiment_schema = ExperimentSchema(exclude=('user',))
+full_experiment_schema = ExperimentSchema(many=True)
 user_schema = UserSchema()
 
 
@@ -46,6 +47,11 @@ def get_raw_experiment(experiment_id):
 def get_user_experiments(user_id):
     query = Experiment.query.filter_by(user_id=user_id)
     return experiment_schema.dump(query, many=True).data
+
+
+def get_all_experiments():
+    query = Experiment.query.all()
+    return full_experiment_schema.dump(query).data
 
 
 def add_experiment(data):
