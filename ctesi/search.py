@@ -15,14 +15,21 @@ class Search:
         """Initialize Search with dataset name."""
         self.name = name
 
-    def login(self, username, password):
+    def login(self, username, password=None, cookie=None):
         """Login to IP2 and keep reference to session."""
         self._ip2 = IP2(
             ip2_url=config.IP2_URL,
             username=username,
             default_project_name=config.PROJECT_NAME
         )
-        return self._ip2.login(password)
+
+        if password:
+            return self._ip2.login(password)
+        elif cookie:
+            return self._ip2.cookie_login(cookie)
+        else:
+            return False
+
 
     def search(self, organism, experiment_type, file_paths, status_callback=None, search_params=None):
         """Initiate search on IP2."""
