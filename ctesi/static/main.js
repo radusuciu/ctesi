@@ -261,6 +261,16 @@ var app = new Vue({
             }, onError);
         },
 
+        leaving: function(e) {
+            if (!this.uploadStatus && this.progress) {
+                var message = 'Your files are not finished uploading just yet. Are you sure you want to leave?';
+                e.returnValue = message;
+                return message;
+            } else {
+                return;
+            }
+        },
+
         _isValid: function() {
             this.$validator.validateAll();
             return !this.errors.any();
@@ -322,5 +332,7 @@ var app = new Vue({
     mounted: function() {
         $('.ui.checkbox').checkbox();
         $('.field .ui.dropdown').dropdown();
+
+        window.addEventListener('beforeunload', this.leaving);
     }
 });
