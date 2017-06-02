@@ -180,6 +180,7 @@ var app = new Vue({
             organism: '',
             ip2username: '',
             ip2password: '',
+            remember_ip2: true
         },
         diffMods: [],
         progress: 0,
@@ -250,6 +251,7 @@ var app = new Vue({
             this.$http.post('/api/ip2_auth', {
                 username: this.data.ip2username,
                 password: this.data.ip2password,
+                remember: this.data.remember_ip2
             }, { emulateJSON: true }).then(function(response) {
                 if (response.data) {
                     onSuccess(response);

@@ -45,6 +45,10 @@ html, body {
     color:#DB2828;
 }
 
+.checkbox.remember-ip2 {
+    padding-top:2.5em;
+}
+
 input[type='number'] {
     -moz-appearance:textfield;
 }

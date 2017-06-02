@@ -43,6 +43,12 @@
                 <label>IP2 Password:</label>
                 <input type="password" v-model="data.ip2password" name="ip2_password" placeholder="Password" v-validate="'required'">
             </div>
+            <div class="field">
+                <div class="ui checkbox remember-ip2">
+                    <label>Remember me</label>
+                    <input type="checkbox" name="remember_ip2" v-model="data.remember_ip2">
+                </div>
+            </div>
         </div>
         <div class="ui error message">{{ errors.first('ip2_password:auth') }}</div>
 
