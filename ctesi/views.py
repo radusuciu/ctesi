@@ -163,7 +163,7 @@ def get_experiment_zip(experiment_id):
 def delete_experiment(experiment_id):
     experiment = api.Experiment.query.get(experiment_id)
 
-    if experiment.user_id == int(current_user.get_id()):
+    if experiment.user_id == int(current_user.get_id()) or current_user.has_role('admin'):
         api.delete_experiment(experiment_id, cancel_task)
         return 'ok'
     else:
