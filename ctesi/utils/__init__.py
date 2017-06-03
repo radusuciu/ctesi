@@ -15,7 +15,7 @@ def validate_protein(sequence):
     return validate_sequence(sequence, AA_DELCHARS)
 
 def validate_search_params(search_params):
-    if 'diff_mods' in search_params:
+    if 'diff_mods' in search_params and search_params['diff_mods']:
         diff_mods = search_params['diff_mods']
     else:
         return None

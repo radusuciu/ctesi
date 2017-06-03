@@ -2,19 +2,26 @@
 from celery import Celery
 from .convert import convert
 from .quantify import quantify
+from .search import Search
 import ctesi.api as api
 import functools
 import pathlib
+import json
+import pickle
 import os
 
 celery = Celery('tasks', broker='amqp://guest@rabbitmq//')
-celery.conf.update(accept_content=['json', 'pickle'])
 
 
-@celery.task(serializer='pickle')
-def process(data, search, user_id, experiment_id, path, search_params=None):
+@celery.task
+def process(user_id, experiment_id, ip2_username, ip2_cookie):
     # convert .raw to .ms2
     # removing first bit of file path since that is the upload folder
+    experiment = api.get_raw_experiment(experiment_id)
+    user = api.get_user(user_id)
+    ip2_cookie = pickle.loads(ip2_cookie)
+
+    path = pathlib.Path(experiment.path)
     corrected_path = pathlib.PurePath(*path.parts[path.parts.index('users') + 1:])
 
     convert_status = convert(
@@ -30,10 +37,13 @@ def process(data, search, user_id, experiment_id, path, search_params=None):
 
     api.update_experiment_status(experiment_id, 'submitting to ip2')
 
+    search = Search(experiment.name)
+    search.login(ip2_username, cookie=ip2_cookie)
+
     # initiate IP2 search
     dta_select_link = search.search(
-        data['organism'],
-        data['type'],
+        experiment.organism,
+        experiment.experiment_type,
         [f for f in converted_paths if f.suffix == '.ms2'],
         status_callback=functools.partial(update_search_status, experiment_id),
         search_params=search_params
@@ -41,7 +51,14 @@ def process(data, search, user_id, experiment_id, path, search_params=None):
 
     # run things through cimage
     api.update_experiment_status(experiment_id, 'cimage')
-    quant_result = quantify(data['name'], dta_select_link, data['type'], path, search_params)
+
+    quant_result = quantify(
+        experiment.name,
+        dta_select_link,
+        experiment.experiment_type,
+        path,
+        json.loads(experiment.search_params)
+    )
 
     # clean up the big files
     if quant_result:

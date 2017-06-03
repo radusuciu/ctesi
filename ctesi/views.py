@@ -3,7 +3,6 @@ from flask import Blueprint, request, abort, render_template, jsonify, send_file
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 from werkzeug import secure_filename
-from .search import Search
 from .tasks import process, cancel_task
 from http import HTTPStatus
 from ctesi import db
@@ -36,27 +35,16 @@ def render():
 @login_required
 def search():
     data = json.loads(request.form.get('data'))
-    search = Search(data['name'])
-
-    login = search.login(data['ip2username'], data['ip2password'])
-
-    if not login:
-        abort(HTTPStatus.UNAUTHORIZED)
-
     data['name'] = secure_filename(data['name'])
 
-    try:
-        diff_mods = data['diffMods']
-        search_params = validate_search_params({ 'diff_mods': diff_mods })
-    except:
-        search_params = None
+    search_params = validate_search_params({ 'diff_mods': data.get('diffMods') })
 
     (experiment_model, experiment_serialized) = api.add_experiment({
         'name': data['name'],
         'user_id': current_user.get_id(),
         'experiment_type': data['type'],
         'organism': data['organism'],
-        'search_params': json.dumps(search_params)
+        'search_params': json.dumps(search_params) or None
     })
 
     experiment = experiment_model.data
@@ -77,7 +65,13 @@ def search():
         abort(HTTPStatus.CONFLICT)
 
     # continue processing in background with celery
-    result = process.delay(data, search, current_user.get_id(), experiment_id, path, search_params)
+    result = process.delay(
+        current_user.get_id(),
+        experiment_id,
+        session['ip2_username'],
+        session['ip2_cookie']
+    )
+
     if not data['remember_ip2']:
         session.pop('ip2_username', None)
         session.pop('ip2_cookie', None)
