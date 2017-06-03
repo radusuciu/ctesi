@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="static/main.css" />
     {% block head %}
     {% endblock %}
+    {% if bootstrap %}
+    <script type="text/javascript">window.bootstrap = {{ bootstrap | tojson | safe }};</script>
+    {% endif %}
 </head>
 <body>
     <div class="ui top inverted fluid attached small menu">

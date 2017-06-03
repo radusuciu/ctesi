@@ -26,7 +26,10 @@ home = Blueprint('home', __name__,
 @home.route('/')
 @login_required
 def render():
-    return render_template('index.html')
+    if session.get('ip2_username') and session.get('ip2_cookie'):
+        bootstrap = {'ip2_authd': True}
+
+    return render_template('index.html', bootstrap=bootstrap)
 
 
 @home.route('/', methods=['POST'])
@@ -75,6 +78,9 @@ def search():
 
     # continue processing in background with celery
     result = process.delay(data, search, current_user.get_id(), experiment_id, path, search_params)
+    if not data['remember_ip2']:
+        session.pop('ip2_username', None)
+        session.pop('ip2_cookie', None)
 
     experiment.task_id = result.id
     db.session.commit()
@@ -127,18 +133,27 @@ def get_all_experiments():
 @api_blueprint.route('/ip2_auth', methods=['POST'])
 @login_required
 def ip2_auth():
-    username = request.form.get('username')
+    username = request.form.get('username') or session.get('ip2_username')
     password = request.form.get('password')
-    remember = request.form.get('remember')
 
-    ip2 = IP2(config.IP2_URL, username, password)
+    # using either source for usernames since I made a mistake in designing ip2api and required a username
+    # on init but not on login.. would be a breaking change if I fixed it
+    ip2 = IP2(config.IP2_URL, username)
 
-    if ip2.logged_in and remember:
-        session['ip2_username'] = username
+    # not using username here because I want to make sure that session and form stuff stick together
+    if request.form.get('username') and password:
+        ip2.login(password)
+    elif session.get('ip2_username') and session.get('ip2_cookie'):
+        ip2.cookie_login(pickle.loads(session['ip2_cookie']))
+
+    # note that the session is not cleared here, but in the search method
+    if ip2.logged_in:
+        session['ip2_username'] = ip2.username
         session['ip2_cookie'] = pickle.dumps(ip2._cookies)
-
-    return jsonify(ip2.logged_in)
-
+        return jsonify(ip2.logged_in)
+    else:
+        abort(HTTPStatus.UNAUTHORIZED)
+    
 
 @api_blueprint.route('/zip/<int:experiment_id>')
 @login_required

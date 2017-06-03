@@ -34,7 +34,7 @@
                 <option value="bcg">M. tb. (BCG)</option>
             </select>
         </div>
-        <div class="fields">
+        <div v-show="askForIP2" class="fields">
             <div class="field" :class="{ error: errors.has('ip2_username') || errors.has('ip2_password') }">
                 <label>IP2 Username</label>
                 <input type="text" v-model="data.ip2username" name="ip2_username" placeholder="Username" v-validate="'required'">

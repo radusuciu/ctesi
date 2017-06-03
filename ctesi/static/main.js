@@ -185,7 +185,8 @@ var app = new Vue({
         diffMods: [],
         progress: 0,
         uploadStatus: '',
-        advanced: false
+        advanced: false,
+        askForIP2: true
     },
     watch: {
         'data.type': function(newType) {
@@ -243,16 +244,22 @@ var app = new Vue({
             this.$validator.validateAll();
 
             this.verifyIP2(this._onSubmit, function(response) {
+                this.askForIP2 = true;
                 this.errors.add('ip2_password', 'Could not login to IP2 with provided credentials.', 'auth');
             }.bind(this));
         },
 
         verifyIP2: function(onSuccess, onError) {
-            this.$http.post('/api/ip2_auth', {
-                username: this.data.ip2username,
-                password: this.data.ip2password,
-                remember: this.data.remember_ip2
-            }, { emulateJSON: true }).then(function(response) {
+            var payload = {};
+
+            if (this.askForIP2) {
+                payload = {
+                    username: this.data.ip2username,
+                    password: this.data.ip2password
+                }
+            }
+
+            this.$http.post('/api/ip2_auth', payload, { emulateJSON: true }).then(function(response) {
                 if (response.data) {
                     onSuccess(response);
                 } else {
@@ -282,8 +289,6 @@ var app = new Vue({
             var onFinish = function(response, xhr) {
                 if (xhr.status === 200) {
                     this.uploadStatus = 'success';
-                } else if (xhr.status === 401) {
-                    this.errors.add('ip2_password', 'Could not login to IP2 with provided credentials.', 'auth');
                 } else {
                     this.uploadStatus = 'error';
                 }
@@ -334,5 +339,9 @@ var app = new Vue({
         $('.field .ui.dropdown').dropdown();
 
         window.addEventListener('beforeunload', this.leaving);
+
+        if (window.hasOwnProperty('bootstrap') && window.bootstrap.hasOwnProperty('ip2_authd')) {
+            this.askForIP2 = !window.bootstrap.ip2_authd;
+        }
     }
 });
