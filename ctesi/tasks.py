@@ -11,9 +11,10 @@ import pickle
 import os
 
 celery = Celery('tasks', broker='amqp://guest@rabbitmq//')
+celery.conf.update(accept_content=['json', 'pickle'])
 
 
-@celery.task
+@celery.task(serializer='pickle')
 def process(user_id, experiment_id, ip2_username, ip2_cookie):
     # convert .raw to .ms2
     # removing first bit of file path since that is the upload folder
