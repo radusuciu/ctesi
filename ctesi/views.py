@@ -25,6 +25,8 @@ home = Blueprint('home', __name__,
 @home.route('/')
 @login_required
 def render():
+    bootstrap = None
+
     if session.get('ip2_username') and session.get('ip2_cookie'):
         bootstrap = {'ip2_authd': True}
 
