@@ -7,7 +7,7 @@ import pathlib
 def upload(files, user_id, name, experiment_id):
     path = pathlib.Path(
         INSTANCE_PATH,
-        'users',
+        'tmp',
         str(user_id),
         str(experiment_id)
     )

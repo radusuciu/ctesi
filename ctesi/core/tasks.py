@@ -2,6 +2,7 @@
 from collections import OrderedDict
 from celery import Celery, chain
 from celery.exceptions import TaskError
+from distutils.dir_util import copy_tree, remove_tree
 from ctesi import db
 from ctesi.core.convert import convert
 from ctesi.core.quantify import quantify
@@ -17,7 +18,7 @@ celery = Celery('tasks', broker='amqp://guest@rabbitmq//')
 celery.conf.update(accept_content=['json', 'pickle'])
 
 
-def process(experiment_id, ip2_username, ip2_cookie, from_step='convert'):
+def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='convert'):
     # convert .raw to .ms2
     # removing first bit of file path since that is the upload folder
     experiment = api.get_raw_experiment(experiment_id)
@@ -25,11 +26,14 @@ def process(experiment_id, ip2_username, ip2_cookie, from_step='convert'):
     steps = ['convert', 'search', 'quantify']
 
     signatures = [
-        convert_task.s(experiment_id),
+        convert_task.si(experiment_id),
         search_task.s(experiment_id, ip2_username, pickle.loads(ip2_cookie)),
         quantify_task.s(experiment_id),
         on_success.s(experiment_id)
     ]
+
+    if temp_path:
+        signatures = [move_task.s(experiment_id, temp_path)] + signatures
 
     result = chain(
         signatures[steps.index(from_step):]
@@ -39,6 +43,14 @@ def process(experiment_id, ip2_username, ip2_cookie, from_step='convert'):
     db.session.commit()
 
     return result
+
+
+@celery.task(serializer='pickle')
+def move_task(experiment_id, temp_path):
+    experiment = api.get_raw_experiment(experiment_id)
+    api.update_experiment_status(experiment_id, 'moving files')
+    copy_tree(str(temp_path), str(experiment.path), preserve_mode=0, preserve_times=0)
+    remove_tree(str(temp_path))
 
 
 @celery.task(serializer='pickle')

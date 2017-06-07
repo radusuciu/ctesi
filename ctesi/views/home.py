@@ -1,4 +1,4 @@
-from flask import Blueprint, request, abort, render_template, jsonify, session
+from flask import Blueprint, request, render_template, jsonify, session
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 from werkzeug import secure_filename
@@ -49,22 +49,19 @@ def search():
     experiment_id = experiment_model.data.experiment_id
 
     # save RAW files to disk
-    # path is type pathlib.Path
-    try:
-        name, path = upload.upload(
-            request.files.getlist('files'),
-            current_user.get_id(),
-            data['name'],
-            experiment_id
-        )
-    except FileExistsError:
-        abort(HTTPStatus.CONFLICT)
+    (name, temp_path) = upload.upload(
+        request.files.getlist('files'),
+        current_user.get_id(),
+        data['name'],
+        experiment_id
+    )
 
     # continue processing in background with celery
     result = process(
         experiment_id,
         session['ip2_username'],
-        session['ip2_cookie']
+        session['ip2_cookie'],
+        temp_path=temp_path
     )
 
     if not data['remember_ip2']:
