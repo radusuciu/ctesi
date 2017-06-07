@@ -57,7 +57,7 @@ def ip2_auth():
 def rerun_processing(experiment_id, step):
     steps = ['convert', 'search', 'quantify']
 
-    if step in steps:
+    if ip2_auth() and step in steps:
         result = process(
             experiment_id,
             session['ip2_username'],
