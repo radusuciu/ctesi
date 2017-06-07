@@ -67,7 +67,7 @@ def search():
         abort(HTTPStatus.CONFLICT)
 
     # continue processing in background with celery
-    result = process.delay(
+    result = process(
         current_user.get_id(),
         experiment_id,
         session['ip2_username'],

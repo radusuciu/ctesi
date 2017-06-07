@@ -1,5 +1,6 @@
 """Define processing actions for celery task queue."""
-from celery import Celery
+from celery import Celery, chain
+from celery.exceptions import TaskError
 from .convert import convert
 from .quantify import quantify
 from .search import Search
@@ -14,14 +15,25 @@ celery = Celery('tasks', broker='amqp://guest@rabbitmq//')
 celery.conf.update(accept_content=['json', 'pickle'])
 
 
-@celery.task(serializer='pickle')
 def process(user_id, experiment_id, ip2_username, ip2_cookie):
     # convert .raw to .ms2
     # removing first bit of file path since that is the upload folder
     experiment = api.get_raw_experiment(experiment_id)
     user = api.get_user(user_id)
-    ip2_cookie = pickle.loads(ip2_cookie)
+    
+    result = chain(
+        convert_task.s(experiment_id),
+        search_task.s(experiment_id, ip2_username, pickle.loads(ip2_cookie)),
+        quantify_task.s(experiment_id),
+        on_success.s(experiment_id)
+    ).apply_async(link_error=on_error.s(experiment_id))
 
+    return result
+
+
+@celery.task(serializer='pickle')
+def convert_task(experiment_id):
+    experiment = api.get_raw_experiment(experiment_id)
     path = pathlib.Path(experiment.path)
     corrected_path = pathlib.PurePath(*path.parts[path.parts.index('users') + 1:])
 
@@ -31,11 +43,14 @@ def process(user_id, experiment_id, ip2_username, ip2_cookie):
     )
 
     if not convert_status:
-        update_conversion_status(experiment_id, {'step': 'converting', 'status': 'error'})
-        return
+        raise TaskError
 
-    converted_paths = [path.joinpath(f) for f in convert_status['files_converted']]
+    return [path.joinpath(f) for f in convert_status['files_converted']]
 
+
+@celery.task(serializer='pickle')
+def search_task(converted_paths, experiment_id, ip2_username, ip2_cookie):
+    experiment = api.get_raw_experiment(experiment_id)
     api.update_experiment_status(experiment_id, 'submitting to ip2')
 
     search = Search(experiment.name)
@@ -47,13 +62,19 @@ def process(user_id, experiment_id, ip2_username, ip2_cookie):
         experiment.experiment_type,
         [f for f in converted_paths if f.suffix == '.ms2'],
         status_callback=functools.partial(update_search_status, experiment_id),
-        search_params=search_params
+        search_params=json.loads(experiment.search_params)
     )
 
-    # run things through cimage
+    return dta_select_link
+
+
+@celery.task(serializer='pickle')
+def quantify_task(dta_select_link, experiment_id):
+    experiment = api.get_raw_experiment(experiment_id)
+    path = pathlib.Path(experiment.path)
     api.update_experiment_status(experiment_id, 'cimage')
 
-    quant_result = quantify(
+    ret = quantify(
         experiment.name,
         dta_select_link,
         experiment.experiment_type,
@@ -61,15 +82,24 @@ def process(user_id, experiment_id, ip2_username, ip2_cookie):
         json.loads(experiment.search_params)
     )
 
+    if not ret:
+        raise TaskError
+
+
+@celery.task
+def on_error(request, exc, traceback, experiment_id):
+    api.update_experiment_status(experiment_id, 'error')
+
+
+@celery.task
+def on_success(experiment_id):
     # clean up the big files
     if quant_result:
         for ext in ('*.raw', '*.ms2', '*.mzXML'):
-            for f in path.glob(ext):
+            for f in experiment.path.glob(ext):
                 os.unlink(str(f))
 
-        api.update_experiment_status(experiment_id, 'done')
-    else:
-        api.update_experiment_status(experiment_id, 'error')
+    api.update_experiment_status(experiment_id, 'done')
 
 
 def cancel_task(task_id, terminate=True):
