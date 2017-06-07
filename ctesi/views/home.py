@@ -73,9 +73,6 @@ def search():
         session.pop('ip2_username', None)
         session.pop('ip2_cookie', None)
 
-    experiment.task_id = result.id
-    db.session.commit()
-
     return jsonify(experiment_serialized)
 
 

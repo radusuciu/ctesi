@@ -2,6 +2,7 @@
 from collections import OrderedDict
 from celery import Celery, chain
 from celery.exceptions import TaskError
+from ctesi import db
 from ctesi.core.convert import convert
 from ctesi.core.quantify import quantify
 from ctesi.core.search import Search
@@ -33,6 +34,9 @@ def process(experiment_id, ip2_username, ip2_cookie, from_step='convert'):
     result = chain(
         signatures[steps.index(from_step):]
     ).apply_async(link_error=on_error.s(experiment_id))
+
+    experiment.task_id = result.id
+    db.session.commit()
 
     return result
 
