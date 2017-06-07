@@ -37,11 +37,11 @@
         <div v-show="askForIP2" class="fields">
             <div class="field" :class="{ error: errors.has('ip2_username') || errors.has('ip2_password') }">
                 <label>IP2 Username</label>
-                <input type="text" v-model="data.ip2username" name="ip2_username" placeholder="Username" v-validate="'required'">
+                <input type="text" v-model="data.ip2username" name="ip2_username" placeholder="Username" v-validate="askForIP2 ? 'required' : ''">
             </div>
             <div class="field" :class="{ error: errors.has('ip2_password') || errors.has('ip2_password') }">
                 <label>IP2 Password:</label>
-                <input type="password" v-model="data.ip2password" name="ip2_password" placeholder="Password" v-validate="'required'">
+                <input type="password" v-model="data.ip2password" name="ip2_password" placeholder="Password" v-validate="askForIP2 ? 'required' : ''">
             </div>
             <div class="field">
                 <div class="ui checkbox remember-ip2">
