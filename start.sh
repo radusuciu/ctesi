@@ -9,6 +9,7 @@ pip install -r requirements.txt
 
 # start celery daemon
 rm celeryd.pid celery.log
+celery -A ctesi.core.tasks worker --workdir="${PROJECT_HOME}" -Ofair --loglevel=info --logfile=celery.log --detach
 
 # run the server
 if [[ -n $DEBUG && $DEBUG == true ]]; then
