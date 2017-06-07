@@ -1,4 +1,5 @@
 """Define processing actions for celery task queue."""
+from collections import OrderedDict
 from celery import Celery, chain
 from celery.exceptions import TaskError
 from ctesi.core.convert import convert
@@ -15,17 +16,22 @@ celery = Celery('tasks', broker='amqp://guest@rabbitmq//')
 celery.conf.update(accept_content=['json', 'pickle'])
 
 
-def process(user_id, experiment_id, ip2_username, ip2_cookie):
+def process(experiment_id, ip2_username, ip2_cookie, from_step='convert'):
     # convert .raw to .ms2
     # removing first bit of file path since that is the upload folder
     experiment = api.get_raw_experiment(experiment_id)
-    user = api.get_user(user_id)
-    
-    result = chain(
+
+    steps = ['convert', 'search', 'quantify']
+
+    signatures = [
         convert_task.s(experiment_id),
         search_task.s(experiment_id, ip2_username, pickle.loads(ip2_cookie)),
         quantify_task.s(experiment_id),
         on_success.s(experiment_id)
+    ]
+
+    result = chain(
+        signatures[steps.index(from_step):]
     ).apply_async(link_error=on_error.s(experiment_id))
 
     return result

@@ -1,7 +1,7 @@
 from flask import Blueprint, abort, jsonify, send_file, request, session
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
-from ctesi.core.tasks import cancel_task
+from ctesi.core.tasks import cancel_task, process
 from http import HTTPStatus
 from ip2api import IP2
 import config.config as config
@@ -51,7 +51,22 @@ def ip2_auth():
         return jsonify(ip2.logged_in)
     else:
         abort(HTTPStatus.UNAUTHORIZED)
-    
+
+
+@api_blueprint.route('/rerun/<int:experiment_id>/<string:step>')
+def rerun_processing(experiment_id, step):
+    steps = ['convert', 'search', 'quantify']
+
+    if step in steps:
+        result = process(
+            experiment_id,
+            session['ip2_username'],
+            session['ip2_cookie'],
+            from_step=step
+        )
+
+    return 'ok'
+
 
 @api_blueprint.route('/zip/<int:experiment_id>')
 @login_required
