@@ -42,13 +42,11 @@ def search():
         'user_id': current_user.get_id(),
         'experiment_type': data['type'],
         'organism': data['organism'],
+        'status': api.make_experiment_status_string('uploading'),
         'search_params': json.dumps(search_params) or None
     })
 
-    experiment = experiment_model.data
-    experiment_id = experiment.experiment_id
-
-    api.update_experiment_status(experiment_id, {'step': 'uploading', 'status': None, 'progress': None})
+    experiment_id = experiment_model.data.experiment_id
 
     # save RAW files to disk
     # path is type pathlib.Path

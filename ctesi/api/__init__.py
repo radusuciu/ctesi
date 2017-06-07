@@ -61,13 +61,15 @@ def add_experiment(data):
     return (experiment, experiment_schema.dump(experiment.data).data)
 
 
-def update_experiment_status(experiment_id, status):
-    experiment = Experiment.query.get(experiment_id)
-
+def make_experiment_status_string(status):
     if isinstance(status, str):
         status = { 'step': status }
+    return json.dumps(status)
 
-    experiment.status = json.dumps(status)
+
+def update_experiment_status(experiment_id, status):
+    experiment = Experiment.query.get(experiment_id)
+    experiment.status = make_experiment_status_string(status)
     db.session.commit()
 
 
