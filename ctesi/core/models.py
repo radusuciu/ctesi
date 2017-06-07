@@ -1,5 +1,4 @@
 """Le models."""
-
 from flask_security import UserMixin, RoleMixin
 from marshmallow import Schema, fields, post_dump, pre_load, post_load
 from sqlalchemy import func

@@ -1,9 +1,9 @@
 """Define processing actions for celery task queue."""
 from celery import Celery, chain
 from celery.exceptions import TaskError
-from .convert import convert
-from .quantify import quantify
-from .search import Search
+from ctesi.core.convert import convert
+from ctesi.core.quantify import quantify
+from ctesi.core.search import Search
 import ctesi.api as api
 import functools
 import pathlib

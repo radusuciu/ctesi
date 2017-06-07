@@ -22,7 +22,7 @@ app.register_blueprint(api_blueprint, url_prefix='/api')
 
 
 # Setup Flask-Security with LDAP goodness
-from .models import User, Role
+from ctesi.core.models import User, Role
 user_datastore = LDAPUserDatastore(db, User, Role)
 security = Security(app, user_datastore, login_form=LDAPLoginForm)
 

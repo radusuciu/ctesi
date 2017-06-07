@@ -1,8 +1,8 @@
 """Defines methods for interacting with database."""
-from ctesi import db
-from ctesi.models import Experiment, ExperimentSchema, User, UserSchema
 from flask import send_file
-from .convert import cancel_convert
+from ctesi import db
+from ctesi.core.models import Experiment, ExperimentSchema, User, UserSchema
+from ctesi.core.convert import cancel_convert
 import sqlalchemy as sa
 import pathlib
 import zipfile

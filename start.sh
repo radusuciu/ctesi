@@ -5,11 +5,10 @@ PROJECT_HOME="/home/ctesi/ctesi"
 cd "${PROJECT_HOME}" || exit
 python3.5 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt 
+pip install -r requirements.txt
 
 # start celery daemon
 rm celeryd.pid celery.log
-celery -A ctesi.tasks worker --workdir="${PROJECT_HOME}" --loglevel=info --logfile=celery.log --detach
 
 # run the server
 if [[ -n $DEBUG && $DEBUG == true ]]; then
