@@ -5,14 +5,17 @@ from http import HTTPStatus
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security
 from flask_migrate import Migrate
+from celery import Celery
 import config.config as config
 
 app = Flask(__name__)
 app.config.from_object(config.config)
 
 db = SQLAlchemy(app)
-
 migrate = Migrate(app, db)
+
+celery = Celery('tasks', broker='amqp://guest@rabbitmq//')
+celery.conf.update(accept_content=['json', 'pickle'])
 
 # Register blueprints
 from ctesi.views import home, users, api_blueprint

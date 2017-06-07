@@ -1,9 +1,9 @@
 """Define processing actions for celery task queue."""
 from collections import OrderedDict
-from celery import Celery, chain
+from celery import chain
 from celery.exceptions import TaskError
 from distutils.dir_util import copy_tree, remove_tree
-from ctesi import db
+from ctesi import db, celery
 from ctesi.core.convert import convert
 from ctesi.core.quantify import quantify
 from ctesi.core.search import Search
@@ -13,9 +13,6 @@ import pathlib
 import json
 import pickle
 import os
-
-celery = Celery('tasks', broker='amqp://guest@rabbitmq//')
-celery.conf.update(accept_content=['json', 'pickle'])
 
 
 def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='convert'):
@@ -122,10 +119,6 @@ def on_success(experiment_id):
                 os.unlink(str(f))
 
     api.update_experiment_status(experiment_id, 'done')
-
-
-def cancel_task(task_id, terminate=True):
-    return celery.control.revoke(task_id, terminate=terminate)
 
 
 def update_conversion_status(experiment_id, status):

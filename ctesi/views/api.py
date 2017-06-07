@@ -1,7 +1,7 @@
 from flask import Blueprint, abort, jsonify, send_file, request, session
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
-from ctesi.core.tasks import cancel_task, process
+from ctesi.core.tasks import process
 from http import HTTPStatus
 from ip2api import IP2
 import config.config as config
@@ -92,7 +92,7 @@ def delete_experiment(experiment_id):
     experiment = api.Experiment.query.get(experiment_id)
 
     if experiment.user_id == int(current_user.get_id()) or current_user.has_role('admin'):
-        api.delete_experiment(experiment_id, cancel_task)
+        api.delete_experiment(experiment_id)
         return 'ok'
     else:
         return 'insufficient permissions'

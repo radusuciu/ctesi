@@ -1,6 +1,6 @@
 """Defines methods for interacting with database."""
 from flask import send_file
-from ctesi import db
+from ctesi import db, celery
 from ctesi.core.models import Experiment, ExperimentSchema, User, UserSchema
 from ctesi.core.convert import cancel_convert
 import sqlalchemy as sa
@@ -89,7 +89,7 @@ def get_zip(experiment_id):
     return memory_file
 
 
-def delete_experiment(experiment_id, cancel_task_handle, force=False):
+def delete_experiment(experiment_id, force=False):
     experiment = Experiment.query.get(experiment_id)
     experiment_serialized = get_experiment(experiment_id)
 
@@ -106,17 +106,17 @@ def delete_experiment(experiment_id, cancel_task_handle, force=False):
         except:
             update_experiment_status(experiment_id, 'error')
     else:
-        cancel_experiment(experiment_id, cancel_task_handle)
+        cancel_experiment(experiment_id)
         # setting force = True to prevent infite recursion where status is undefined
-        delete_experiment(experiment_id, cancel_task_handle, force=True)
+        delete_experiment(experiment_id, force=True)
 
 
-def cancel_experiment(experiment_id, cancel_task_handle):
+def cancel_experiment(experiment_id):
     experiment = Experiment.query.get(experiment_id)
     experiment_serialized = get_experiment(experiment_id)
 
     if experiment.task_id:
-        res = cancel_task_handle(experiment.task_id)
+        res = celery.control.revoke(experiment.task_id, terminate=True)
         experiment.task_id = ''
         db.session.commit()
 
