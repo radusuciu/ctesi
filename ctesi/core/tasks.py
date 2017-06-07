@@ -29,7 +29,7 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='
         convert_task.si(experiment_id),
         search_task.s(experiment_id, ip2_username, pickle.loads(ip2_cookie)),
         quantify_task.s(experiment_id),
-        on_success.s(experiment_id)
+        on_success.si(experiment_id)
     ]
 
     if temp_path:
