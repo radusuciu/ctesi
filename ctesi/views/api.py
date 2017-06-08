@@ -63,6 +63,7 @@ def rerun_processing(experiment_id, step):
             experiment_id,
             session['ip2_username'],
             session['ip2_cookie'],
+            user_id=current_user.get_id(),
             from_step=step
         )
 

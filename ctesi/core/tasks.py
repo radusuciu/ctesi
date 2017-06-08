@@ -3,7 +3,8 @@ from collections import OrderedDict
 from celery import chain
 from celery.exceptions import TaskError
 from distutils.dir_util import copy_tree, remove_tree
-from ctesi import db, celery
+import smtplib
+from ctesi import db, celery, app
 from ctesi.core.convert import convert
 from ctesi.core.quantify import quantify
 from ctesi.core.search import Search
@@ -15,7 +16,7 @@ import pickle
 import os
 
 
-def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='convert'):
+def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, send_email=False, user_id=None, from_step='convert'):
     # convert .raw to .ms2
     # removing first bit of file path since that is the upload folder
     experiment = api.get_raw_experiment(experiment_id)
@@ -24,6 +25,7 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='
     convert_sig = convert_task.si(experiment_id)
     search_sig = search_task.s(experiment_id, ip2_username, pickle.loads(ip2_cookie))
     quantify_sig = quantify_task.s(experiment_id)
+
 
     # ammending signatures where necessary for re-runs
     if from_step == 'search':
@@ -39,6 +41,9 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='
 
     if temp_path:
         signatures = [move_task.s(experiment_id, temp_path)] + signatures
+
+    if send_email and user_id:
+        signatures =  signatures + [email_task.si(user_id, experiment_id)]
 
     result = chain(
         signatures[steps.index(from_step):]
@@ -113,6 +118,26 @@ def quantify_task(dta_select_link, experiment_id, setup_dta=True):
 
     if not ret:
         raise TaskError
+
+@celery.task(serializer='pickle', bind=True, soft_time_limit=120)
+def email_task(self, user_id, experiment_id):
+    experiment = api.get_raw_experiment(experiment_id)
+    user = api.get_user(user_id)
+
+    sender = app.config['MAIL_DEFAULT_SENDER'][0]
+    subject = 'Your dataset {} has finished processing'.format(experiment.name)
+    body = 'You may download the dataset from http://titanic.scripps.edu/api/zip/{}'.format(experiment_id)
+
+    msg = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(sender, user.email, subject, body)
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(app.config['MAIL_USERNAME'][0], app.config['MAIL_PASSWORD'])
+        server.sendmail(sender, user.email, msg)
+        server.quit()
+    except Exception as e:
+        self.retry(countdown=30, exc=e, max_retries=1)
 
 
 @celery.task

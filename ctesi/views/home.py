@@ -61,7 +61,9 @@ def search():
         experiment_id,
         session['ip2_username'],
         session['ip2_cookie'],
-        temp_path=temp_path
+        temp_path=temp_path,
+        user_id=current_user.get_id(),
+        send_email=json.loads(data['email'])
     )
 
     if not data['remember_ip2']:

@@ -180,7 +180,8 @@ var app = new Vue({
             organism: '',
             ip2username: '',
             ip2password: '',
-            remember_ip2: true
+            remember_ip2: true,
+            email: true
         },
         diffMods: [],
         progress: 0,

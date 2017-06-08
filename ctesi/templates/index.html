@@ -52,6 +52,13 @@
         </div>
         <div class="ui error message">{{ errors.first('ip2_password:auth') }}</div>
 
+        <div class="field">
+            <div class="ui toggle checkbox">
+                <input type="checkbox" name="send_email" v-model="data.email">
+                <label>Send email notification on completion</label>
+            </div>
+        </div>
+
         <div class="advanced" v-if="advanced">
             <div class="ui horizontal divider">
                 <i class="settings icon"></i>
