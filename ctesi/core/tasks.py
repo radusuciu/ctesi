@@ -31,9 +31,11 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='
         search_sig.args = (ms2_paths,) + search_sig.args
 
     if from_step == 'cimage':
-        quantify.kwargs['setup_dta'] = False
+        dta_link = ''
+        quantify_sig.args = (dta_link, ) + quantify_sig.args
+        quantify_sig.kwargs['setup_dta'] = False
 
-    signatures = [convert_sig, search_sig, quantify_sig, on_success.si(experiment_id)]
+    signatures = [convert_sig, search_sig, quantify_sig, on_success.s(experiment_id)]
 
     if temp_path:
         signatures = [move_task.s(experiment_id, temp_path)] + signatures
@@ -95,7 +97,7 @@ def search_task(converted_paths, experiment_id, ip2_username, ip2_cookie):
 
 
 @celery.task(serializer='pickle', soft_time_limit=21600)
-def quantify_task(dta_select_link, experiment_id):
+def quantify_task(dta_select_link, experiment_id, setup_dta=True):
     experiment = api.get_raw_experiment(experiment_id)
     path = pathlib.Path(experiment.path)
     api.update_experiment_status(experiment_id, 'cimage')
@@ -105,7 +107,8 @@ def quantify_task(dta_select_link, experiment_id):
         dta_select_link,
         experiment.experiment_type,
         path,
-        json.loads(experiment.search_params)
+        json.loads(experiment.search_params),
+        setup_dta=setup_dta
     )
 
     if not ret:
@@ -118,7 +121,7 @@ def on_error(request, exc, traceback, experiment_id):
 
 
 @celery.task
-def on_success(experiment_id):
+def on_success(quant_result, experiment_id):
     # clean up the big files
     if quant_result:
         for ext in ('*.raw', '*.ms2', '*.mzXML'):
