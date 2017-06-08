@@ -77,4 +77,10 @@ class _DevelopmentConfig(_Config):
     DEBUG = True
 
 
+class CeleryConfig:
+    broker_url = 'amqp://guest@rabbitmq//'
+    result_backend = 'redis://'
+    accept_content = ['json', 'pickle']
+
+
 config = _DevelopmentConfig if DEBUG else _Config

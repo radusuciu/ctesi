@@ -14,8 +14,8 @@ app.config.from_object(config.config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-celery = Celery('tasks', broker='amqp://guest@rabbitmq//')
-celery.conf.update(accept_content=['json', 'pickle'])
+celery = Celery()
+celery.config_from_object(config.CeleryConfig)
 
 # Register blueprints
 from ctesi.views import home, users, api_blueprint
