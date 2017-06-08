@@ -19,15 +19,21 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='
     # convert .raw to .ms2
     # removing first bit of file path since that is the upload folder
     experiment = api.get_raw_experiment(experiment_id)
+    steps = ['convert', 'search', 'cimage']
 
-    steps = ['convert', 'search', 'quantify']
+    convert_sig = convert_task.si(experiment_id)
+    search_sig = search_task.s(experiment_id, ip2_username, pickle.loads(ip2_cookie))
+    quantify_sig = quantify_task.s(experiment_id)
 
-    signatures = [
-        convert_task.si(experiment_id),
-        search_task.s(experiment_id, ip2_username, pickle.loads(ip2_cookie)),
-        quantify_task.s(experiment_id),
-        on_success.si(experiment_id)
-    ]
+    # ammending signatures where necessary for re-runs
+    if from_step == 'search':
+        ms2_paths = experiment.path.glob('*.ms2')
+        search_sig.args = (ms2_paths,) + search_sig.args
+
+    if from_step == 'cimage':
+        quantify.kwargs['setup_dta'] = False
+
+    signatures = [convert_sig, search_sig, quantify_sig, on_success.si(experiment_id)]
 
     if temp_path:
         signatures = [move_task.s(experiment_id, temp_path)] + signatures
@@ -42,8 +48,6 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='
     return result
 
 
-@celery.task(serializer='pickle')
-def move_task(experiment_id, temp_path, soft_time_limit=600):
 @celery.task(serializer='pickle', soft_time_limit=600)
 def move_task(experiment_id, temp_path):
     experiment = api.get_raw_experiment(experiment_id)
