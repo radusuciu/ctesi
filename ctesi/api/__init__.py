@@ -90,10 +90,10 @@ def get_zip(experiment_id):
 
 
 def delete_experiment(experiment_id, force=False):
-    experiment = Experiment.query.get(experiment_id)
-    experiment_serialized = get_experiment(experiment_id)
-
     try:
+        experiment = Experiment.query.get(experiment_id)
+        experiment_serialized = get_experiment(experiment_id)
+
         status = experiment_serialized['status']['step']
 
         if force or status in ('done', 'error', 'cancelled'):

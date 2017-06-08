@@ -44,6 +44,8 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, from_step='
 
 @celery.task(serializer='pickle')
 def move_task(experiment_id, temp_path, soft_time_limit=600):
+@celery.task(serializer='pickle', soft_time_limit=600)
+def move_task(experiment_id, temp_path):
     experiment = api.get_raw_experiment(experiment_id)
     api.update_experiment_status(experiment_id, 'moving files')
     copy_tree(str(temp_path), str(experiment.path), preserve_mode=0, preserve_times=0)
@@ -67,8 +69,8 @@ def convert_task(experiment_id):
     return [str(path.joinpath(f)) for f in convert_status['files_converted']]
 
 
-@celery.task(serializer='pickle')
-def search_task(converted_paths, experiment_id, ip2_username, ip2_cookie, soft_time_limit=172800):
+@celery.task(serializer='pickle', soft_time_limit=172800)
+def search_task(converted_paths, experiment_id, ip2_username, ip2_cookie):
     converted_paths = [pathlib.Path(p) for p in converted_paths]
     experiment = api.get_raw_experiment(experiment_id)
     api.update_experiment_status(experiment_id, 'submitting to ip2')
