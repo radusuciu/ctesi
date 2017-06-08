@@ -50,7 +50,7 @@ def move_task(experiment_id, temp_path):
     remove_tree(str(temp_path))
 
 
-@celery.task(serializer='pickle')
+@celery.task(serializer='pickle', soft_time_limit=1800)
 def convert_task(experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
     path = pathlib.Path(experiment.path)
