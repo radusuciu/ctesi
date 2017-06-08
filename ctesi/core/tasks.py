@@ -8,6 +8,7 @@ from ctesi import db, celery, app
 from ctesi.core.convert import convert
 from ctesi.core.quantify import quantify
 from ctesi.core.search import Search
+from ctesi.utils import send_mail
 import ctesi.api as api
 import functools
 import pathlib
@@ -124,18 +125,11 @@ def email_task(self, user_id, experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
     user = api.get_user(user_id)
 
-    sender = app.config['MAIL_DEFAULT_SENDER'][0]
     subject = 'Your dataset {} has finished processing'.format(experiment.name)
     body = 'You may download the dataset from http://titanic.scripps.edu/api/zip/{}'.format(experiment_id)
 
-    msg = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(sender, user.email, subject, body)
-
     try:
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.ehlo()
-        server.login(app.config['MAIL_USERNAME'][0], app.config['MAIL_PASSWORD'])
-        server.sendmail(sender, user.email, msg)
-        server.quit()
+        send_mail(user.email, subject, body)
     except Exception as e:
         self.retry(countdown=30, exc=e, max_retries=1)
 
