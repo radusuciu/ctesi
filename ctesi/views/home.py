@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, jsonify, session
+from flask import Blueprint, request, render_template, jsonify, send_file, session
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 from werkzeug import secure_filename
@@ -97,9 +97,9 @@ def get_experiment_zip(experiment_id):
 
         return send_file(
             memory_file,
-                attachment_filename='{}.zip'.format(experiment.name),
-                as_attachment=True,
-                mimetype='application/zip, application/octet-stream'
-            )
+            attachment_filename='{}.zip'.format(experiment.name),
+            as_attachment=True,
+            mimetype='application/zip, application/octet-stream'
+        )
 
     return 'ok'

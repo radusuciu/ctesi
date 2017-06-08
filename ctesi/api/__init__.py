@@ -80,9 +80,12 @@ def get_zip(experiment_id):
 
     memory_file = io.BytesIO()
 
+    do_not_zip = ['.raw', '.ms2', '.mzxml']
+
     with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
         for f in path.rglob('*'):
-            zf.write(str(f), str(f.relative_to(path)))
+            if f.suffix.lower() not in do_not_zip:
+                zf.write(str(f), str(f.relative_to(path)))
 
     memory_file.seek(0)
 

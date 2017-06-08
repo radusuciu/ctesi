@@ -62,7 +62,7 @@
                 <td>{{ e.experiment_type }}</td>
                 <td>{{ e.date | prettyDate }}</td>
                 <td class="right aligned">
-                    <a :href="'/api/zip/' + e.experiment_id"><i class="download icon"></i></a>
+                    <a :href="'/zip/' + e.experiment_id"><i class="download icon"></i></a>
                     <i class="remove icon" @click="remove(e, index)"></i>
                 </td>
             </tr>

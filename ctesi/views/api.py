@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, jsonify, send_file, request, session
+from flask import Blueprint, abort, jsonify, request, session
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 from ctesi.core.tasks import process
