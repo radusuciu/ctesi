@@ -11,8 +11,12 @@ import subprocess
 QUANT_PARAMS_PATH = config.SEARCH_PARAMS_PATH.parent.joinpath('quantification')
 
 
-def quantify(name, dta_link, experiment_type, path, search_params=None):
-    dta_paths = setup_dta_folders(name, path, dta_link, search_params)
+def quantify(name, dta_link, experiment_type, path, search_params=None, setup_dta=True):
+    if setup_dta:
+        dta_paths = setup_dta_folders(name, path, dta_link, search_params)
+    else:
+        dta_paths = _get_dta_paths(path)
+
     params_path = str(_get_params_path(experiment_type, path, search_params))
 
     normal_search = cimage(params_path, dta_paths['lh'], name, hl_flag=False)
@@ -82,6 +86,13 @@ def setup_dta_folders(name, path, dta_link, search_params=None):
     return {
         'lh': str(dta_path),
         'hl': str(dta_hl_path)
+    }
+
+
+def _get_dta_paths(path):
+    return {
+        'lh': str(path.joinpath('dta')),
+        'hl': str(path.joinpath('dta_HL'))
     }
 
 
