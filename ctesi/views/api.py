@@ -55,7 +55,7 @@ def ip2_auth():
 
 @api_blueprint.route('/rerun/<int:experiment_id>/<string:step>')
 def rerun_processing(experiment_id, step):
-    steps = ['convert', 'search', 'quantify']
+    steps = ['convert', 'search', 'cimage']
 
     if ip2_auth() and step in steps:
         result = process(
