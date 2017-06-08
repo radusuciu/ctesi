@@ -30,7 +30,7 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, send_email=
 
     # ammending signatures where necessary for re-runs
     if from_step == 'search':
-        ms2_paths = experiment.path.glob('*.ms2')
+        ms2_paths = list(experiment.path.glob('*.ms2'))
         search_sig.args = (ms2_paths,) + search_sig.args
 
     if from_step == 'cimage':
