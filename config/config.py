@@ -79,6 +79,8 @@ class _DevelopmentConfig(_Config):
 
 class CeleryConfig:
     broker_url = 'amqp://guest@rabbitmq//'
+    redis_port = 6379
+    redis_host = 'redis'
     result_backend = 'redis://'
     accept_content = ['json', 'pickle']
 
