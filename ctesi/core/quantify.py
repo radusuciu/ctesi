@@ -68,11 +68,11 @@ def setup_dta_folders(name, path, dta_link, search_params=None):
                 dta_content = dta_content.replace('({})'.format(mod['mass']), symbol)
 
     dta_path = path.joinpath('dta')
-    dta_path.mkdir()
+    dta_path.mkdir(exist_ok=True)
 
     # duplicate dta file for cimage
     dta_hl_path = path.joinpath('dta_HL')
-    dta_hl_path.mkdir()
+    dta_hl_path.mkdir(exist_ok=True)
 
     dta_file_path = dta_path.joinpath('DTASelect-filter_{}_foo.txt'.format(name))
 
