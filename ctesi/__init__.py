@@ -2,6 +2,7 @@
 from flask import Flask, jsonify, make_response
 from ctesi.ldap import LDAPUserDatastore, LDAPLoginForm
 from http import HTTPStatus
+from redis import StrictRedis
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security
 from flask_migrate import Migrate
@@ -16,6 +17,8 @@ migrate = Migrate(app, db)
 
 celery = Celery()
 celery.config_from_object(config.CeleryConfig)
+
+redis = StrictRedis(host='redis')
 
 # Register blueprints
 from ctesi.views import home, users, api_blueprint

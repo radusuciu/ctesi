@@ -22,6 +22,9 @@ services:
         hostname: rabbitmq
         tty: true
         stdin_open: true
+    redis:
+        image: redis
+        hostname: redis
     nginx:
         image: nginx
         volumes:

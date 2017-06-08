@@ -7,6 +7,7 @@ gunicorn
 ldap3
 marshmallow
 pyyaml
+redis
 requests
 sqlalchemy
 wheel
