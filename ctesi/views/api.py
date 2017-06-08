@@ -56,8 +56,9 @@ def ip2_auth():
 @api_blueprint.route('/rerun/<int:experiment_id>/<string:step>')
 def rerun_processing(experiment_id, step):
     steps = ['convert', 'search', 'cimage']
+    experiment = api.get_raw_experiment(experiment_id)
 
-    if ip2_auth() and step in steps:
+    if ip2_auth() and step in steps and (experiment.user_id == int(current_user.get_id()) or current_user.has_role('admin')):
         result = process(
             experiment_id,
             session['ip2_username'],
