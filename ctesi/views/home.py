@@ -85,3 +85,21 @@ def status():
 def admin():
     user_id = current_user.get_id()
     return render_template('admin.html', user=user_id)
+
+
+@home.route('/zip/<int:experiment_id>')
+@login_required
+def get_experiment_zip(experiment_id):
+    experiment = api.Experiment.query.get(experiment_id)
+
+    if experiment.user_id == int(current_user.get_id()):
+        memory_file = api.get_zip(experiment_id)
+
+        return send_file(
+            memory_file,
+                attachment_filename='{}.zip'.format(experiment.name),
+                as_attachment=True,
+                mimetype='application/zip, application/octet-stream'
+            )
+
+    return 'ok'

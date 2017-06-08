@@ -126,7 +126,7 @@ def email_task(self, user_id, experiment_id):
     user = api.get_user(user_id)
 
     subject = 'Your dataset {} has finished processing'.format(experiment.name)
-    body = 'You may download the dataset from http://titanic.scripps.edu/api/zip/{}'.format(experiment_id)
+    body = 'You may download the dataset from http://titanic.scripps.edu/zip/{}'.format(experiment_id)
 
     try:
         send_mail(user.email, subject, body)
