@@ -7,7 +7,7 @@
 {% block content %}
 {% raw %}
 <div id="status" class="ui container">
-    <h1 class="ui header">In progress</h1>
+    <h1 class="ui header">Experiments</h1>
     <table class="ui table">
         <thead>
             <tr>
@@ -38,29 +38,14 @@
                     <i class="remove icon" @click="remove(e, index)"></i>
                 </td>
             </tr>
-        </tbody>
-    </table>
-
-    <h1 class="ui header">Finished experiments</h1>
-
-    <table class="ui table">
-        <thead>
-            <tr>
-                <th class="one wide center aligned">ID</th>
-                <th class="four wide">Name</th>
-                <th class="two wide">Organism</th>
-                <th class="two wide">Type</th>
-                <th class="three wide">Date</th>
-                <th class="collapsing right aligned">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
+            <tr class="table-separator"><td colspan="100%"></td></tr>
             <tr v-for="(e, index) in experiments" v-if="e.status.step === 'done' ">
                 <td class="center aligned">{{ e.experiment_id }}</td>
                 <td>{{ e.name }}</td>
                 <td>{{ e.organism }}</td>
                 <td>{{ e.experiment_type }}</td>
                 <td>{{ e.date | prettyDate }}</td>
+                <td>done</td>
                 <td class="right aligned">
                     <a :href="'/zip/' + e.experiment_id"><i class="download icon"></i></a>
                     <i class="remove icon" @click="remove(e, index)"></i>
