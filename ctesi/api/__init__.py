@@ -95,20 +95,19 @@ def delete_experiment(experiment_id, force=False):
 
     try:
         status = experiment_serialized['status']['step']
-    except:
-        status = ''
 
-    if force or status in ('done', 'error', 'cancelled'):
-        try:
-            shutil.rmtree(str(experiment.path))
+        if force or status in ('done', 'error', 'cancelled'):
+            if experiment.path.exists():
+                shutil.rmtree(str(experiment.path))
+
             db.session.delete(experiment)
             db.session.commit()
-        except:
-            update_experiment_status(experiment_id, 'error')
-    else:
-        cancel_experiment(experiment_id)
-        # setting force = True to prevent infite recursion where status is undefined
-        delete_experiment(experiment_id, force=True)
+        else:
+            cancel_experiment(experiment_id)
+            # setting force = True to prevent infite recursion where status is undefined
+            delete_experiment(experiment_id, force=True)
+    except:
+        update_experiment_status(experiment_id, 'error')
 
 
 def cancel_experiment(experiment_id):
@@ -126,6 +125,9 @@ def cancel_experiment(experiment_id):
         if step == 'converting':
             path = str(experiment.user_id) + '/' + str(experiment_id)
             res = cancel_convert(path)
+
+        if experiment.tmp_path.exists():
+            shutil.rmtree(str(experiment.tmp_path))
     except:
         pass
 
