@@ -3,7 +3,7 @@ import smtplib
 
 def send_mail(recipient, subject, body):
     sender = app.config['MAIL_DEFAULT_SENDER'][0]
-    msg = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(sender, recipient, subject, body)
+    msg = 'From: {}\nTo: {}\nSubject: {}\n\n{}\n.'.format(sender, recipient, subject, body)
 
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     server.ehlo()
