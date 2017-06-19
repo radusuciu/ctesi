@@ -88,7 +88,6 @@ def admin():
 
 
 @home.route('/zip/<int:experiment_id>')
-@login_required
 def get_experiment_zip(experiment_id):
     experiment = api.Experiment.query.get(experiment_id)
 
