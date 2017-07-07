@@ -118,6 +118,13 @@
             </table>
 
             <div class="ui divider"></div>
+            <h3 class="ui header">Misc. settings</h3>
+            <div class="inline field">
+                <label>Mininum number of peptides per protein (-p)</label>
+                <input type="number" v-model="data.options.minPeptidesPerProtein">
+            </div>
+            
+            <div class="ui divider"></div>
         </div>
         <div v-else>
             <button type="button" class="ui labeled icon button" @click="showAdvanced">

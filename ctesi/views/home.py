@@ -35,7 +35,10 @@ def search():
     data = json.loads(request.form.get('data'))
     data['name'] = secure_filename(data['name'])
 
-    search_params = validate_search_params({ 'diff_mods': data.get('diffMods') })
+    search_params = validate_search_params({
+        'diff_mods': data.get('diffMods'),
+        'options': data.get('options')
+    })
 
     (experiment_model, experiment_serialized) = api.add_experiment({
         'name': data['name'],

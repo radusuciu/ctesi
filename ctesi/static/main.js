@@ -181,7 +181,10 @@ var app = new Vue({
             ip2username: '',
             ip2password: '',
             remember_ip2: true,
-            email: true
+            email: true,
+            options: {
+                minPeptidesPerProtein: undefined
+            },
         },
         diffMods: [],
         progress: 0,

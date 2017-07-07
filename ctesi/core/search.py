@@ -34,6 +34,10 @@ class Search:
     def search(self, organism, experiment_type, file_paths, status_callback=None, search_params=None):
         """Initiate search on IP2."""
         params = self._get_params(experiment_type, search_params)
+
+        if search_params.get('options', {}).get('minPeptidesPerProtein'):
+            params['dp.p'] = search_params['options']['minPeptidesPerProtein']
+
         # get database by file name
         database = self._ip2.get_database(self._get_database_path(organism)['name'])
 
