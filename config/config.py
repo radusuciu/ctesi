@@ -82,6 +82,7 @@ class CeleryConfig:
     redis_port = 6379
     redis_host = 'redis'
     result_backend = 'redis://'
+    task_track_started = True
     accept_content = ['json', 'pickle']
 
 

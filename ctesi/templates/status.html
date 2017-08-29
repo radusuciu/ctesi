@@ -21,7 +21,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="(e, index) in experiments" v-if="e.status.step !== 'done'">
+            <template v-for="(e, index) in experiments">
+            <tr @click="detailed = (detailed === e.experiment_id) ? -1 : e.experiment_id">
                 <td class="center aligned">{{ e.experiment_id }}</td>
                 <td>{{ e.name }}</td>
                 <td>{{ e.organism }}</td>
@@ -35,22 +36,18 @@
                 </td>
                 <td class="error" v-else></td>
                 <td class="right aligned">
+                    <a v-if="e.status.step === 'done'" :href="'/zip/' + e.experiment_id"><i class="download icon"></i></a>
                     <i class="remove icon" @click="remove(e, index)"></i>
                 </td>
             </tr>
-            <tr class="table-separator"><td colspan="100%"></td></tr>
-            <tr v-for="(e, index) in experiments" v-if="e.status.step === 'done' ">
-                <td class="center aligned">{{ e.experiment_id }}</td>
-                <td>{{ e.name }}</td>
-                <td>{{ e.organism }}</td>
-                <td>{{ e.experiment_type }}</td>
-                <td>{{ e.date | prettyDate }}</td>
-                <td>done</td>
-                <td class="right aligned">
-                    <a :href="'/zip/' + e.experiment_id"><i class="download icon"></i></a>
-                    <i class="remove icon" @click="remove(e, index)"></i>
+            <tr v-if="detailed === e.experiment_id">
+                <td colspan="7">
+                    <div>
+                        nothing
+                    </div>
                 </td>
             </tr>
+            </template>
         </tbody>
     </table>
 </div>

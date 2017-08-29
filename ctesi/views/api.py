@@ -2,11 +2,14 @@ from flask import Blueprint, abort, jsonify, request, session
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 from ctesi.core.tasks import process
+from ctesi import celery as celery_app
 from http import HTTPStatus
 from ip2api import IP2
 import config.config as config
 import ctesi.api as api
 import pickle
+import json
+import hashlib
 
 
 admin_permission = Permission(RoleNeed('admin'))
@@ -19,13 +22,22 @@ api_blueprint = Blueprint('api_blueprint', __name__,
 @api_blueprint.route('/')
 @login_required
 def get_experiments():
-    return jsonify(api.get_user_experiments(current_user.get_id()))
+    experiments = api.get_user_experiments(current_user.get_id())
+    experiments['hash'] = hashlib.sha1(json.dumps(experiments, sort_keys=True).encode('utf-8')).hexdigest()
+    return jsonify(experiments)
 
 
 @api_blueprint.route('/admin')
 @admin_permission.require(http_exception=404)
 def get_all_experiments():
     return jsonify(api.get_all_experiments())
+
+
+@api_blueprint.route('/status/<int:experiment_id>')
+def status(experiment_id):
+    experiment = api.get_raw_experiment(experiment_id)
+    task = celery_app.AsyncResult(experiment.task_id)
+    return task.state
 
 
 @api_blueprint.route('/ip2_auth', methods=['POST'])

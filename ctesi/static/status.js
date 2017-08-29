@@ -3,12 +3,25 @@ Vue.use(VueResource);
 var app = new Vue({
     el: '#status',
     data: {
-        experiments: []
+        experiments: [],
+        hash: null,
+        detailed: null
     },
     methods: {
         getExperiments: function() {
             this.$http.get('/api/').then(function(response) {
-                this.experiments = response.data.experiments;
+                if (response.data.hash === this.hash) {
+                    return;
+                }
+
+                this.hash = response.data.hash;
+                this.experiments = response.data.experiments.sort(function(el) {
+                    if (el.status.step === 'done') {
+                        return el.experiment_id + Math.pow(10, 10);
+                    } else {
+                        return el.experiment_id;
+                    }
+                });
             });
         },
         remove: function(experiment, index) {

@@ -37,6 +37,10 @@ html, body {
     margin-bottom:1em;
 }
 
+.advanced .inline.field > label {
+    width:30%!important;
+}
+
 .close.icon {
     cursor:pointer;
 }

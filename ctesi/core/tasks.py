@@ -48,7 +48,7 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, send_email=
 
     result = chain(
         signatures[steps.index(from_step):]
-    ).apply_async(link_error=on_error.s(experiment_id))
+    ).apply_async(link_error=on_error.s(experiment_id), ignore_result=False)
 
     experiment.task_id = result.id
     db.session.commit()

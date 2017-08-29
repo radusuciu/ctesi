@@ -183,13 +183,14 @@ var app = new Vue({
             remember_ip2: true,
             email: true,
             options: {
-                minPeptidesPerProtein: undefined
+                minPeptidesPerProtein: 2,
+                maxNumDiffmod: 1
             },
         },
         diffMods: [],
         progress: 0,
         uploadStatus: '',
-        advanced: false,
+        advanced: true,
         askForIP2: true
     },
     watch: {
