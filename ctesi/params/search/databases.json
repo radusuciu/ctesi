@@ -23,5 +23,10 @@
         "name": "UniProt_c_elegans_01-15-2014_reversed.fasta",
         "user_id": 186,
         "database_id": 1627
+    },
+    "rat": {
+        "name": "UniProt_rat_01-01-2016_reversed.fasta",
+        "user_id": 241,
+        "database_id": 2043
     }
 }
