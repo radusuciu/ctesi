@@ -25,8 +25,8 @@
         "database_id": 1627
     },
     "rat": {
-        "name": "UniProt_rat_01-01-2016_reversed.fasta",
-        "user_id": 241,
-        "database_id": 2043
+        "name": "UniProt_rat_nonredundant_fromGabe_09-30-2013.fasta",
+        "user_id": 176,
+        "database_id": 2621
     }
 }
