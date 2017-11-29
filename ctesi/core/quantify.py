@@ -13,10 +13,9 @@ QUANT_PARAMS_PATH = config.SEARCH_PARAMS_PATH.parent.joinpath('quantification')
 
 def quantify(name, dta_link, experiment_type, path, search_params=None, setup_dta=True):
     if setup_dta:
-        dta_paths = setup_dta_folders(name, path, dta_link, search_params)
-    else:
-        dta_paths = _get_dta_paths(path)
+        setup_dta_folders(name, path, dta_link, search_params)
 
+    dta_paths = _get_dta_paths(path)
     params_path = str(_get_params_path(experiment_type, path, search_params))
 
     normal_search = cimage(params_path, dta_paths['lh'], name, hl_flag=False)
@@ -61,32 +60,18 @@ def setup_dta_folders(name, path, dta_link, search_params=None):
     r = requests.get(dta_link)
     dta_content = r.text
 
+    # find and replace diff mods with appropriate symbols
     if search_params and 'diff_mods' in search_params:
         symbol_mod_map = _symbolify_diff_mods(search_params['diff_mods'])[0]
         for symbol, mods in symbol_mod_map.items():
             for mod in mods:
                 dta_content = dta_content.replace('({})'.format(mod['mass']), symbol)
 
-    dta_path = path.joinpath('dta')
-    dta_path.mkdir(exist_ok=True)
-
-    # duplicate dta file for cimage
-    dta_hl_path = path.joinpath('dta_HL')
-    dta_hl_path.mkdir(exist_ok=True)
-
-    dta_file_path = dta_path.joinpath('DTASelect-filter_{}_foo.txt'.format(name))
-
-    # write data file to disk for regular L/H cimage run
-    with dta_file_path.open('w') as f:
-        f.write(dta_content)
-
-    with dta_hl_path.joinpath(dta_file_path.name).open('w') as f:
-        f.write(dta_content)
-
-    return {
-        'lh': str(dta_path),
-        'hl': str(dta_hl_path)
-    }
+    for p in ('dta', 'dta_HL'):
+        dta_path = path.joinpath(p)
+        dta_path.mkdir(exist_ok=True)
+        dta_path.joinpath('DTASelect-filter_{}_light.txt'.format(name)).write_text(dta_content)
+        dta_path.joinpath('DTASelect-filter_{}_heavy.txt'.format(name)).write_text(dta_content)
 
 
 def _get_dta_paths(path):
