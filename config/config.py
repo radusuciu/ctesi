@@ -24,6 +24,10 @@ if _override_path.is_file():
         _SECRETS.update(yaml.load(f))
 
 
+DATA_PATH = pathlib.Path('/data')
+TMP_PATH = DATA_PATH.joinpath('tmp')
+
+TMP_PATH.mkdir(exist_ok=True)
 
 INSTANCE_PATH = PROJECT_HOME_PATH.joinpath(PROJECT_NAME, 'uploads')
 SEARCH_PARAMS_PATH = PROJECT_HOME_PATH.joinpath(PROJECT_NAME, 'params', 'search')

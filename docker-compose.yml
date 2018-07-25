@@ -12,6 +12,7 @@ services:
         volumes:
             - .:/home/ctesi/ctesi
             - ../cimage-minimal:/home/ctesi/cimage-minimal
+            - data:/data
         cap_add:
             - SYS_ADMIN
             - DAC_READ_SEARCH
@@ -34,4 +35,6 @@ services:
             - '80:80'
         environment:
             NGINX_HOST: 'localhost'
-        command: /bin/bash -c "envsubst '$$NGINX_HOST' < /etc/nginx/ctesi.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+        command: /bin/bash -c "envsubst '$$NGINX_HOST' < /etc/nginx/ctesi.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"        command: /bin/bash -c "envsubst '$$NGINX_HOST' < /etc/nginx/ctesi.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+volumes:
+    data:

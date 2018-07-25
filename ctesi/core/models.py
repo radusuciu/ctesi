@@ -82,15 +82,14 @@ class Experiment(db.Model):
 
     @hybrid_property
     def tmp_path(self):
-        return config.INSTANCE_PATH.joinpath(
-            'tmp',
+        return config.TMP_PATH.joinpath(
             str(self.user_id),
             str(self.experiment_id)
         )
 
     @hybrid_property
     def path(self):
-        return config.INSTANCE_PATH.joinpath(
+        return config.DATA_PATH.joinpath(
             'users',
             str(self.user_id),
             str(self.experiment_id)

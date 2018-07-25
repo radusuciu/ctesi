@@ -1,16 +1,11 @@
 """Handles uploads of .RAW files."""
 from werkzeug import secure_filename
-from config.config import INSTANCE_PATH
+from config.config import TMP_PATH
 import pathlib
 
 
 def upload(files, user_id, name, experiment_id):
-    path = pathlib.Path(
-        INSTANCE_PATH,
-        'tmp',
-        str(user_id),
-        str(experiment_id)
-    )
+    path = TMP_PATH.joinpath(str(user_id), str(experiment_id))
 
     name = secure_filename(name)
 

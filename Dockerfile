@@ -21,6 +21,9 @@ RUN ln -s /home/ctesi/cimage-minimal/cimage2 /usr/local/bin
 RUN ln -s /home/ctesi/cimage-minimal/cimage_combine /usr/local/bin
 ENV CIMAGE_PATH /home/ctesi/cimage-minimal
 
-WORKDIR /home/ctesi/ctesi
+RUN mkdir -p /data/tmp
+RUN chown ctesi:ctesi -R /data
+
 USER ctesi
+WORKDIR /home/ctesi/ctesi
 CMD [ "/bin/bash", "/home/ctesi/ctesi/start.sh" ]

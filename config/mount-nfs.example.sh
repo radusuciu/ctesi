@@ -1,1 +1,0 @@
-mount -t cifs //path/to/network/share /home/ctesi/ctesi/ctesi/uploads/users -o username=USERNAME,password=password
