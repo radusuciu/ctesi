@@ -85,7 +85,6 @@ def convert_task(experiment_id):
 def search_task(convert_status, experiment_id, ip2_username, ip2_cookie):
     experiment = api.get_raw_experiment(experiment_id)
     api.update_experiment_status(experiment_id, 'submitting to ip2')
-
     search = Search(experiment.name)
     search.login(ip2_username, cookie=ip2_cookie)
 
@@ -93,7 +92,7 @@ def search_task(convert_status, experiment_id, ip2_username, ip2_cookie):
     dta_select_link = search.search(
         experiment.organism,
         experiment.experiment_type,
-        [f for f in converted_paths if f.suffix == '.ms2'],
+        list(pathlib.Path(experiment.path).glob('*.raw')),
         status_callback=functools.partial(update_search_status, experiment_id),
         search_params=json.loads(experiment.search_params)
     )

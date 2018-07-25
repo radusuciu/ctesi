@@ -47,7 +47,9 @@ class Search:
             search_options={
                 'params': params,
                 'database': database
-            }
+            },
+            convert=True,
+            monoisotopic=True
         )
 
         link = self._check_search_status(job, experiment, status_callback)
