@@ -1,4 +1,4 @@
-version: '2'
+version: '3.6'
 
 services:
     ctesi:
@@ -18,6 +18,23 @@ services:
             - DAC_READ_SEARCH
         tty: true
         stdin_open: true
+    flask-readw:
+        image: radusuciu/flask-readw
+        environment:
+          DEBUG: 'true'
+          FLASK_DEBUG: 1
+          FLASK_ENV: 'development'
+          LC_ALL: 'C.UTF-8'
+          LANG: 'C.UTF-8'
+          FLASK_APP: 'flask_readw/__init__.py'
+        volumes:
+            - ../flask-readw:/app/flask_readw
+            - data:/raw_vault
+        tty: true
+        stdin_open: true
+        ports:
+            - target: "5000"
+              published: "5001"
     rabbitmq:
         image: rabbitmq
         hostname: rabbitmq
@@ -35,6 +52,6 @@ services:
             - '80:80'
         environment:
             NGINX_HOST: 'localhost'
-        command: /bin/bash -c "envsubst '$$NGINX_HOST' < /etc/nginx/ctesi.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"        command: /bin/bash -c "envsubst '$$NGINX_HOST' < /etc/nginx/ctesi.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+        command: /bin/bash -c "envsubst '$$NGINX_HOST' < /etc/nginx/ctesi.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
 volumes:
     data:

@@ -32,7 +32,7 @@ TMP_PATH.mkdir(exist_ok=True)
 INSTANCE_PATH = PROJECT_HOME_PATH.joinpath(PROJECT_NAME, 'uploads')
 SEARCH_PARAMS_PATH = PROJECT_HOME_PATH.joinpath(PROJECT_NAME, 'params', 'search')
 
-CONVERT_URL = 'http://cravattwork.scripps.edu:5001'
+CONVERT_URL = 'http://flask-readw:5000'
 IP2_URL = 'http://goldfish.scripps.edu'
 
 

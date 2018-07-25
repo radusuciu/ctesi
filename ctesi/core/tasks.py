@@ -68,7 +68,7 @@ def move_task(experiment_id, temp_path):
 def convert_task(experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
     path = pathlib.Path(experiment.path)
-    corrected_path = pathlib.PurePath(*path.parts[path.parts.index('users') + 1:])
+    corrected_path = pathlib.PurePath(*path.parts[path.parts.index('users'):])
 
     convert_status = convert(
         corrected_path.as_posix(),
@@ -78,12 +78,11 @@ def convert_task(experiment_id):
     if not convert_status:
         raise TaskError
 
-    return [str(path.joinpath(f)) for f in convert_status['files_converted']]
+    return convert_status
 
 
 @celery.task(serializer='pickle', soft_time_limit=172800)
-def search_task(converted_paths, experiment_id, ip2_username, ip2_cookie):
-    converted_paths = [pathlib.Path(p) for p in converted_paths]
+def search_task(convert_status, experiment_id, ip2_username, ip2_cookie):
     experiment = api.get_raw_experiment(experiment_id)
     api.update_experiment_status(experiment_id, 'submitting to ip2')
 
