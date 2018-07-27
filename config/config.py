@@ -26,8 +26,7 @@ if _override_path.is_file():
 
 DATA_PATH = pathlib.Path('/data')
 TMP_PATH = DATA_PATH.joinpath('tmp')
-
-TMP_PATH.mkdir(exist_ok=True)
+FINISHED_PATH = pathlib.Path('/finished')
 
 INSTANCE_PATH = PROJECT_HOME_PATH.joinpath(PROJECT_NAME, 'uploads')
 SEARCH_PARAMS_PATH = PROJECT_HOME_PATH.joinpath(PROJECT_NAME, 'params', 'search')

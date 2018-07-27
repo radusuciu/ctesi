@@ -9,6 +9,7 @@ from ctesi.core.convert import convert
 from ctesi.core.quantify import quantify
 from ctesi.core.search import Search
 from ctesi.utils import send_mail
+import config.config as config
 import ctesi.api as api
 import functools
 import pathlib
@@ -141,11 +142,26 @@ def on_error(request, exc, traceback, experiment_id):
 
 @celery.task
 def on_success(quant_result, experiment_id):
+    experiment = api.get_raw_experiment(experiment_id)
+
     # clean up the big files
     if quant_result:
         for ext in ('*.raw', '*.ms2', '*.mzXML'):
             for f in experiment.path.glob(ext):
                 os.unlink(str(f))
+
+    # move to mirror results across network
+    finished_path = config.FINISHED_PATH.joinpath(
+        experiment.user.username,
+        experiment.name
+    )
+
+    try:
+        remove_tree(str(finished_path))
+    except FileNotFoundError:
+        pass
+
+    copy_tree(str(experiment.path), str(finished_path), preserve_mode=False, preserve_times=False)
 
     api.update_experiment_status(experiment_id, 'done')
 
