@@ -118,6 +118,8 @@ def quantify_task(dta_select_link, experiment_id, setup_dta=True):
     if not ret:
         raise TaskError
 
+    return ret
+
 @celery.task(serializer='pickle', bind=True, soft_time_limit=120)
 def email_task(self, user_id, experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
