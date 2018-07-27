@@ -18,7 +18,7 @@ Flask-SQLAlchemy==2.2
 Flask-WTF==0.14.2
 gunicorn==19.7.1
 idna==2.5
--e git+https://github.com/radusuciu/ip2api.git@0fea26cdf5eaeebcdf8f23c79a7f11e12616a486#egg=ip2api
+-e git+https://github.com/radusuciu/ip2api.git@826b8f00455b6ea75e0b5a0b9f4f444a98629cf4#egg=ip2api
 itsdangerous==0.24
 Jinja2==2.9.6
 kombu==4.0.2
