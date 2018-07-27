@@ -3,9 +3,25 @@
 PROJECT_HOME="/home/ctesi/ctesi"
 # install requirements in virtual environment
 cd "${PROJECT_HOME}" || exit
-python3.5 -m venv venv
+
+if [ ! -d venv ]; then
+    python3.5 -m venv venv
+    source venv/bin/activate
+    pip install -U pip setuptools
+    deactivate
+fi
+
 source venv/bin/activate
-pip install -r requirements.txt
+
+# easy way to update requirements to latest version
+# just delete requirements.txt and restart the container
+if [ ! -f requirements.txt ]; then
+    pip install -r requirements-base.txt
+    pip freeze > requirements.txt
+fi
+
+
+pip install --process-dependency-links -r requirements.txt 
 
 # start celery daemon
 rm celeryd.pid celery.log
