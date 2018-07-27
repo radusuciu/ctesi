@@ -15,13 +15,14 @@ var app = new Vue({
                 }
 
                 this.hash = response.data.hash;
-                this.experiments = response.data.experiments.sort(function(el) {
+
+                this.experiments = _.sortBy(response.data.experiments, [function(el) {
                     if (el.status.step === 'done') {
                         return el.experiment_id + Math.pow(10, 10);
                     } else {
                         return el.experiment_id;
                     }
-                });
+                }]);
             });
         },
         remove: function(experiment, index) {
