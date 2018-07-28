@@ -190,7 +190,7 @@ var app = new Vue({
         diffMods: [],
         progress: 0,
         uploadStatus: '',
-        advanced: true,
+        advanced: false,
         askForIP2: true
     },
     watch: {
