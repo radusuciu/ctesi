@@ -5,37 +5,31 @@ services:
         build: .
         environment:
             DEBUG: 'true'
+            FLASK_DEBUG: 1
+            FLASK_ENV: 'development'
             LC_ALL: 'C.UTF-8'
             LANG: 'C.UTF-8'
             FLASK_APP: 'ctesi/__init__.py'
-            FLASK_DEBUG: 1
         volumes:
             - .:/home/ctesi/ctesi
             - ../cimage-minimal:/home/ctesi/cimage-minimal
             - data:/data
             - finished_mirror:/finished
-        cap_add:
-            - SYS_ADMIN
-            - DAC_READ_SEARCH
+            - cravault:/cravault
         tty: true
         stdin_open: true
     flask-readw:
         image: radusuciu/flask-readw
         environment:
-          DEBUG: 'true'
-          FLASK_DEBUG: 1
-          FLASK_ENV: 'development'
-          LC_ALL: 'C.UTF-8'
-          LANG: 'C.UTF-8'
-          FLASK_APP: 'flask_readw/__init__.py'
+            DEBUG: 'true'
+            FLASK_DEBUG: 1
+            FLASK_ENV: 'development'
+            LC_ALL: 'C.UTF-8'
+            LANG: 'C.UTF-8'
+            FLASK_APP: 'flask_readw/__init__.py'
         volumes:
             - ../flask-readw:/app/flask_readw
             - data:/raw_vault
-        tty: true
-        stdin_open: true
-        ports:
-            - target: "5000"
-              published: "5001"
     rabbitmq:
         image: rabbitmq
         hostname: rabbitmq
