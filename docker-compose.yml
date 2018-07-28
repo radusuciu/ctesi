@@ -15,7 +15,6 @@ services:
             - ../cimage-minimal:/home/ctesi/cimage-minimal
             - data:/data
             - finished_mirror:/finished
-            - cravault:/cravault
         tty: true
         stdin_open: true
     flask-readw:
