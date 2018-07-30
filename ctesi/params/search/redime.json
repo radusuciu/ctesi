@@ -20,7 +20,7 @@
     "sp.staticmods": [ "57.02146 C ", "28.0313 K ", "" ],
     "sp.scanNumber": "4000",
     "sp.maxNumDiffmod": "1",
-    "sp.diffmods": [ "15.994915 M ","" ],
+    "sp.diffmods": [ "" ],
     "sp.includeHeavySearch": "yes",
     "sp.isN15Search": "no",
     "sp.heavyAtomicEnrichment": "100",
