@@ -163,7 +163,7 @@
         <div class="ui file-upload field">
             <span class="ui error message">{{ errors.first('file-select') }}</span>
             <button class="ui primary button" type="submit">Submit</button>
-            <button type="button" class="ui button" onclick="document.getElementById('file-select').click()">
+            <button type="button" class="ui green button" onclick="document.getElementById('file-select').click()">
                 <i class="file outline icon"></i> Select Raw Files
                 <input type="file" name="file-select" id="file-select" multiple v-on:change="onFileChange($event)" data-vv-as="file upload" v-validate="'required|ext:raw,RAW'" />
             </button>
