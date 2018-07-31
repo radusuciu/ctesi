@@ -6,6 +6,7 @@ import config.config as config
 import pathlib
 import requests
 import subprocess
+import os
 
 
 QUANT_PARAMS_PATH = config.SEARCH_PARAMS_PATH.parent.joinpath('quantification')
@@ -15,7 +16,11 @@ def quantify(name, dta_link, experiment_type, path, search_params=None, setup_dt
     if setup_dta:
         setup_dta_folders(name, path, dta_link, search_params)
 
-    dta_paths = _get_dta_paths(path)
+    dta_paths = _get_dta_paths(name, path)
+
+    for dta_path in dta_paths.values():
+        symlink_mzxmls(path, dta_path.parent)
+
     params_path = str(_get_params_path(experiment_type, path, search_params))
 
     normal_search = cimage(params_path, dta_paths['lh'], name, hl_flag=False)
@@ -23,8 +28,8 @@ def quantify(name, dta_link, experiment_type, path, search_params=None, setup_dt
 
     if normal_search == 0 and inverse_search == 0:
         return (
-            combine(path, experiment_type) == 0 and
-            combine(path, experiment_type, dta_folder='dta_HL') == 0
+            combine(dta_paths['lh'].parent, experiment_type) == 0 and
+            combine(dta_paths['hl'].parent, experiment_type) == 0
         )
     else:
         return False
@@ -38,7 +43,7 @@ def cimage(params_path, dta_folder_path, name, hl_flag):
         'cimage2',
         params_path,
         name
-    ], cwd=dta_folder_path).wait()
+    ], cwd=str(dta_folder_path)).wait()
 
 
 def combine(path, experiment_type, dta_folder='dta'):
@@ -52,6 +57,14 @@ def combine(path, experiment_type, dta_folder='dta'):
         args.insert(1, 'by_protein')
 
     return subprocess.Popen(args, cwd=str(path)).wait()
+
+def symlink_mzxmls(src, dst):
+    mzxmls_paths = pathlib.Path(src).glob('*.mzXML')
+    for x in mzxmls_paths:
+        try:
+            os.symlink(str(x), str(dst.joinpath(x.name)))
+        except FileExistsError:
+            pass
 
 
 def setup_dta_folders(name, path, dta_link, search_params=None):
@@ -67,17 +80,20 @@ def setup_dta_folders(name, path, dta_link, search_params=None):
             for mod in mods:
                 dta_content = dta_content.replace('({})'.format(mod['mass']), symbol)
 
-    for p in ('dta', 'dta_HL'):
-        dta_path = path.joinpath(p)
-        dta_path.mkdir(exist_ok=True)
+    dta_paths = _get_dta_paths(name, path)
+
+    for dta_path in dta_paths.values():
+        dta_path.mkdir(parents=True, exist_ok=True)
         dta_path.joinpath('DTASelect-filter_{}_light.txt'.format(name)).write_text(dta_content)
         dta_path.joinpath('DTASelect-filter_{}_heavy.txt'.format(name)).write_text(dta_content)
 
+    return dta_paths
 
-def _get_dta_paths(path):
+
+def _get_dta_paths(name, path):
     return {
-        'lh': str(path.joinpath('dta')),
-        'hl': str(path.joinpath('dta_HL'))
+        'lh': path.joinpath('{}_LH'.format(name), 'dta'),
+        'hl': path.joinpath('{}_HL'.format(name), 'dta')
     }
 
 
