@@ -150,7 +150,7 @@ def on_success(quant_result, experiment_id):
 
     # clean up the big files
     if quant_result:
-        for ext in ('*.raw', '*.ms2', '*.mzXML'):
+        for ext in ('*.raw', '*.RAW', '*.ms2', '*.mzXML', '*/*.mzXML'):
             for f in experiment.path.glob(ext):
                 os.unlink(str(f))
 
