@@ -35,9 +35,6 @@ class Search:
         """Initiate search on IP2."""
         params = self._get_params(experiment_type, search_params)
 
-        if search_params.get('options', {}).get('minPeptidesPerProtein'):
-            params['dp.p'] = search_params['options']['minPeptidesPerProtein']
-
         # get database by file name
         database = self._ip2.get_database(self._get_database_path(organism)['name'])
 
@@ -66,10 +63,29 @@ class Search:
         with SEARCH_PARAMS_PATH.joinpath(params_map[experiment_type]).open() as f:
             params = json.loads(f.read())
 
-            if search_params and 'diff_mods' in search_params:
-                diff_mods = search_params['diff_mods']
-                new_mods = ['{} {} '.format(mod['mass'], mod['aa']) for mod in diff_mods]
-                params['sp.diffmods'] = new_mods
+        if search_params and 'diff_mods' in search_params:
+            diff_mods = search_params['diff_mods']
+            new_mods = ['{} {} '.format(mod['mass'], mod['aa']) for mod in diff_mods]
+            params['sp.diffmods'] = new_mods
+
+        if search_params and 'options' in search_params:
+            params = self._add_options_to_params(params, search_params['options'])
+
+
+        return params
+
+    def _add_options_to_params(self, params, options=None):
+        if not options:
+            return params
+
+        options_map = {
+            'minPeptidesPerProtein': 'dp.p',
+            'maxNumDiffmod': 'sp.maxNumDiffmod'
+        }
+
+        for option, param_equivalent in options_map.items():
+            if option in options:
+                params[param_equivalent] = options[option]
 
         return params
 
