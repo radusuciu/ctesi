@@ -46,7 +46,8 @@ def _validate_options(options):
         return None
 
     accepted_options = {
-        'minPeptidesPerProtein': int
+        'minPeptidesPerProtein': int,
+        'maxNumDiffmod': int
     }
 
     valid_options = {}
