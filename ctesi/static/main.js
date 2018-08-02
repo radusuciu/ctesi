@@ -148,7 +148,7 @@ Vue.component('diff-mod', {
                 mass += massMap[el] * this.comp[el];
             }
 
-            return mass.toFixed(5);
+            return mass.toFixed(6);
         },
         state: function() {
             var state = {
