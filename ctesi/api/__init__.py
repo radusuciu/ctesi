@@ -70,7 +70,13 @@ def make_experiment_status_string(status):
 def update_experiment_status(experiment_id, status):
     experiment = Experiment.query.get(experiment_id)
     experiment.status = make_experiment_status_string(status)
-    db.session.commit()
+
+    try:
+        # can throw an exception if the experiment disappears before the update can be done
+        db.session.commit()
+    except:
+        db.session.rollback()
+        raise
 
 
 def get_zip(experiment_id):
