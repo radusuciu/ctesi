@@ -195,9 +195,12 @@ var app = new Vue({
     },
     watch: {
         'data.type': function(newType) {
-            if (this.advanced) {
-                this.removeAllDiffMods();
-                this.showAdvanced();
+            // if experiment type changes we check if the type needs certain diff mods
+            // note that we do this even if the advanced pane is hidden
+            this.removeAllDiffMods();
+
+            if (predefinedDiffMods.hasOwnProperty(this.data.type)) {
+                this.addDiffMod(predefinedDiffMods[this.data.type]);
             }
         }
     },
@@ -239,10 +242,6 @@ var app = new Vue({
 
         showAdvanced: function() {
             this.advanced = true;
-
-            if (predefinedDiffMods.hasOwnProperty(this.data.type)) {
-                this.addDiffMod(predefinedDiffMods[this.data.type]);
-            }
         },
 
         onSubmit:function() {
