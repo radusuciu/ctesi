@@ -183,7 +183,7 @@ var app = new Vue({
             remember_ip2: true,
             email: true,
             options: {
-                minPeptidesPerProtein: 2,
+                minPeptidesPerProtein: 1,
                 maxNumDiffmod: 1
             },
         },
