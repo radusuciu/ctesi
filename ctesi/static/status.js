@@ -21,7 +21,7 @@ var app = new Vue({
                         return el.experiment_id;
                     }
                 }]);
-            });
+            }.bind(this));
         },
         remove: function(experiment, index) {
             axios.get('/api/delete/' + experiment.experiment_id).then(function(response) {
