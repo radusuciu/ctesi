@@ -6,11 +6,14 @@ from redis import StrictRedis
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import Security
 from flask_migrate import Migrate
+from flask_login import current_user
+from flask_allows import Allows
 from celery import Celery
 import config.config as config
 
 app = Flask(__name__)
 app.config.from_object(config.config)
+allows = Allows(app=app, identity_loader=lambda: current_user)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)

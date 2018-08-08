@@ -2,6 +2,7 @@ celery
 flask
 flask-migrate
 flask-security
+flask-allows
 flask-sqlalchemy
 gunicorn
 ldap3
