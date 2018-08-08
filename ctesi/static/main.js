@@ -1,6 +1,5 @@
 /*jshint esversion: 6 */ 
 
-Vue.use(VueResource);
 Vue.use(VeeValidate);
 
 
@@ -263,13 +262,13 @@ var app = new Vue({
                 }
             }
 
-            this.$http.post('/api/ip2_auth', payload, { emulateJSON: true }).then(function(response) {
+            axios.post('/api/ip2_auth', payload).then(function(response) {
                 if (response.data) {
                     onSuccess(response);
                 } else {
                     onError(response);
                 }
-            }, onError);
+            }.bind(this), onError);
         },
 
         leaving: function(e) {

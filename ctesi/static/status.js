@@ -1,5 +1,3 @@
-Vue.use(VueResource);
-
 var app = new Vue({
     el: '#status',
     data: {
@@ -9,7 +7,7 @@ var app = new Vue({
     },
     methods: {
         getExperiments: function() {
-            this.$http.get('/api/').then(function(response) {
+            axios.get('/api/').then(function(response) {
                 if (response.data.hash === this.hash) {
                     return;
                 }
@@ -26,9 +24,9 @@ var app = new Vue({
             });
         },
         remove: function(experiment, index) {
-            this.$http.get('/api/delete/' + experiment.experiment_id).then(function(response) {
+            axios.get('/api/delete/' + experiment.experiment_id).then(function(response) {
                 this.experiments.splice(index, 1);
-            });
+            }.bind(this));
         }
     },
     filters: {
