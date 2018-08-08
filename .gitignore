@@ -11,6 +11,10 @@ ctesi.db
 celery.pid
 celery.log
 
+# files that may be around for testing
+*.RAW
+*.raw
+
 # Python things
 *.pyc
 *.pid
