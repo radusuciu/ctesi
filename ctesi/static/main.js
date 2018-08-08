@@ -181,16 +181,17 @@ var app = new Vue({
             ip2password: '',
             remember_ip2: true,
             email: true,
-            options: {
-                minPeptidesPerProtein: 1,
-                maxNumDiffmod: 1
-            },
+            options: {},
         },
         diffMods: [],
         progress: 0,
         uploadStatus: '',
         advanced: false,
-        askForIP2: true
+        askForIP2: true,
+        defaultOptions: {
+            minPeptidesPerProtein: 1,
+            maxNumDiffmod: 1
+        }
     },
     watch: {
         'data.type': function(newType) {
@@ -240,6 +241,9 @@ var app = new Vue({
         },
 
         showAdvanced: function() {
+            // only including these options in the data sent to server if
+            // they are actually visible on the user's screen
+            this.data.options = this.defaultOptions;
             this.advanced = true;
         },
 
