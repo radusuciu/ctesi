@@ -1,12 +1,9 @@
 from flask import Blueprint, request, render_template, jsonify, send_file, session
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
-from werkzeug import secure_filename
 from http import HTTPStatus
 from ctesi import db
 from ctesi.core.tasks import process
-from ctesi.utils import validate_search_params
-import ctesi.core.upload as upload
 import ctesi.api as api
 import json
 
@@ -27,53 +24,6 @@ def render():
         bootstrap = {'ip2_authd': True}
 
     return render_template('index.html', bootstrap=bootstrap)
-
-
-@home.route('/', methods=['POST'])
-@login_required
-def search():
-    data = json.loads(request.form.get('data'))
-    data['name'] = secure_filename(data['name'])
-
-    search_params = validate_search_params({
-        'diff_mods': data.get('diffMods'),
-        'options': data.get('options')
-    })
-
-    (experiment_model, experiment_serialized) = api.add_experiment({
-        'name': data['name'],
-        'user_id': current_user.get_id(),
-        'experiment_type': data['type'],
-        'organism': data['organism'],
-        'status': api.make_experiment_status_string('uploading'),
-        'search_params': json.dumps(search_params) or None
-    })
-
-    experiment_id = experiment_model.data.experiment_id
-
-    # save RAW files to disk
-    (name, temp_path) = upload.upload(
-        request.files.getlist('files'),
-        current_user.get_id(),
-        data['name'],
-        experiment_id
-    )
-
-    # continue processing in background with celery
-    result = process(
-        experiment_id,
-        session['ip2_username'],
-        session['ip2_cookie'],
-        temp_path=temp_path,
-        user_id=current_user.get_id(),
-        send_email=data['email']
-    )
-
-    if not data['remember_ip2']:
-        session.pop('ip2_username', None)
-        session.pop('ip2_cookie', None)
-
-    return jsonify(experiment_serialized)
 
 
 @home.route('/status')

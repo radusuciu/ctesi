@@ -173,6 +173,7 @@ var app = new Vue({
     el: '#app',
     data: {
         files: [],
+        experimentId: null,
         data: {
             name: '',
             type: '',
@@ -206,7 +207,13 @@ var app = new Vue({
     },
     methods: {
         onFileChange: function(e) {
-            this.files = _.values(e.target.files);
+            this.files = _.map(_.values(e.target.files), function(file) {
+                return {
+                    file: file,
+                    progress: 0,
+                    status: ''
+                }
+            });
         },
 
         addDiffMod: function(mod) {
@@ -293,48 +300,76 @@ var app = new Vue({
         _onSubmit: function() {
             if (!this._isValid()) return;
 
-            var onFinish = function(response, xhr) {
-                if (xhr.status === 200) {
-                    this.uploadStatus = 'success';
-                } else {
-                    this.uploadStatus = 'error';
-                }
-            }.bind(this);
-
-            var onProgress = function(progress) {
-                this.progress = progress;
-            }.bind(this);
-
             this.uploadStatus = '';
+            this.experimentId = null;
+
+            // this.data stores data that will be sent to server
             this.data.diffMods = this.diffMods;
-            this._submitForm(this.data, this.files, onFinish, onProgress);
+
+            var onSuccess = function() {
+                this.uploadStatus = 'success';
+            }.bind(this);
+
+            var onError = function() {
+                this.uploadStatus = 'error';
+            }.bind(this);
+
+            // first make request to add new experiment
+            // note that this will set an experimentId which is needed to submit files
+            this._submitData()
+                // if we've successfully made a new experiment then we submit files
+                .then(this._submitFiles)
+                // and then make another request to tell the server to start processing
+                .then(this._startProcessing)
+                .then(onSuccess)
+                .catch(onError)
         },
 
-        _submitForm: function(form, files, finishCallback, progressCallack) {
-            var url = '/';
-            var formData = new FormData();
-            var xhr = new XMLHttpRequest();
+        _startProcessing: function() {
+            return axios.get('/api/process/' + this.experimentId);
+        },
 
-            formData.append('data', JSON.stringify(form));
+        _submitData: function() {
+            var request = axios.post('/api/experiment', this.data).then(function(response) {
+                this.experimentId = response.data.experiment_id;
+            }.bind(this));
 
-            for (var i = 0, n = files.length; i < n; i++) {
-                formData.append('files', files[i], files[i].name);
+            return request;
+        },
+
+        _submitFiles: function() {
+            var url = '/api/upload_file/' + this.experimentId;
+
+            var progress = function(file, progressEvent) {
+                var progress = Math.round(progressEvent.loaded / progressEvent.total * 100);
+                file.progress = progress;
+
+                // keeping track of overall progress
+                this.progress = _.reduce(this.files, function(memo, num) {
+                    return memo.progress + num.progress;
+                }) / this.files.length;
+            };
+
+            var requests = [];
+
+            for (var i = 0, n = this.files.length; i < n; i++) {
+                var formData = new FormData();
+                var f = this.files[i];
+                formData.append('files', f.file, f.file.name);
+
+                f.progress = 0;
+
+                requests.push(axios.post(url, formData, {
+                    onUploadProgress: progress.bind(this, f)
+                }).then(function(response) {
+                    f.status = 'success';
+                }).catch(function(errors) {
+                    f.status = 'error';
+                }));
             }
 
-            xhr.onreadystatechange = function(){
-                if (xhr.readyState === 4) {
-                    finishCallback(xhr.response, xhr);
-                }
-            };
-
-            xhr.upload.onprogress = function(event) {
-                var progress = Math.round(event.loaded / event.total * 100);
-                progressCallack(progress);
-            };
-
-            xhr.open('POST', url, true);
-            xhr.send(formData);
-        }
+            return axios.all(requests);
+        },
     },
     filters: {
         toFixed: function(num) {

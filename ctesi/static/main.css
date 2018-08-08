@@ -25,6 +25,10 @@ html, body {
     transition-duration:300ms;
 }
 
+.individualProgress {
+    margin-bottom:0!important;
+}
+
 .diff-mod .aa {
     text-transform:uppercase;
 }

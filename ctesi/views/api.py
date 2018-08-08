@@ -1,7 +1,9 @@
 from flask import Blueprint, abort, jsonify, request, session
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
+from werkzeug import secure_filename
 from ctesi.core.tasks import process
+from ctesi.utils import validate_search_params
 from ctesi import celery as celery_app
 from http import HTTPStatus
 from ip2api import IP2
@@ -33,6 +35,67 @@ def get_all_experiments():
     return jsonify(api.get_all_experiments())
 
 
+@api_blueprint.route('/experiment', methods=['POST'])
+@login_required
+def new_experiment():
+    data = request.json
+    data['name'] = secure_filename(data['name'])
+
+    search_params = validate_search_params({
+        'diff_mods': data.get('diffMods'),
+        'options': data.get('options')
+    })
+
+    (experiment_model, experiment_serialized) = api.add_experiment({
+        'name': data['name'],
+        'user_id': current_user.get_id(),
+        'experiment_type': data['type'],
+        'organism': data['organism'],
+        'status': api.make_experiment_status_string('incomplete'),
+        'search_params': json.dumps(search_params) or None
+    })
+
+    return jsonify({'experiment_id': experiment_model.data.experiment_id})
+
+
+@api_blueprint.route('/upload_file/<int:experiment_id>', methods=['POST'])
+@login_required
+def add_file(experiment_id):
+    experiment = api.get_raw_experiment(experiment_id)
+    api.update_experiment_status(experiment_id, 'uploading')
+
+    file = request.files.getlist('files')[0]
+    filename = secure_filename(file.filename)
+    filepath = experiment.tmp_path.joinpath(filename)
+    # making sure we use lowercase extension
+    filepath = filepath.with_suffix(filepath.suffix.lower())
+
+    # only allow .raw extension
+    if filepath.suffix == '.raw':
+        experiment.tmp_path.mkdir(exist_ok=True, parents=True)
+        file.save(str(filepath))
+
+    return 'ok'
+
+
+@api_blueprint.route('/process/<int:experiment_id>')
+def process_experiment(experiment_id):
+    result = process(
+        experiment_id,
+        session['ip2_username'],
+        session['ip2_cookie'],
+        temp_path='temp',
+        user_id=current_user.get_id(),
+        send_email=True
+    )
+
+    # if not data['remember_ip2']:
+    #     session.pop('ip2_username', None)
+    #     session.pop('ip2_cookie', None)
+
+    return 'ok'
+
+
 @api_blueprint.route('/status/<int:experiment_id>')
 def status(experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
@@ -43,15 +106,15 @@ def status(experiment_id):
 @api_blueprint.route('/ip2_auth', methods=['POST'])
 @login_required
 def ip2_auth():
-    username = request.form.get('username') or session.get('ip2_username')
-    password = request.form.get('password')
+    username = request.json.get('username') or session.get('ip2_username')
+    password = request.json.get('password')
 
     # using either source for usernames since I made a mistake in designing ip2api and required a username
     # on init but not on login.. would be a breaking change if I fixed it
     ip2 = IP2(config.IP2_URL, username)
 
     # not using username here because I want to make sure that session and form stuff stick together
-    if request.form.get('username') and password:
+    if request.json.get('username') and password:
         ip2.login(password)
     elif session.get('ip2_username') and session.get('ip2_cookie'):
         ip2.cookie_login(pickle.loads(session['ip2_cookie']))

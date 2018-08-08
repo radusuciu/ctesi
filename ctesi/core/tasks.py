@@ -28,7 +28,6 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, send_email=
     search_sig = search_task.s(experiment_id, ip2_username, pickle.loads(ip2_cookie))
     quantify_sig = quantify_task.s(experiment_id)
 
-
     # ammending signatures where necessary for re-runs
     if from_step == 'search':
         ms2_paths = list(experiment.path.glob('*.ms2'))
@@ -42,7 +41,7 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, send_email=
     signatures = [convert_sig, search_sig, quantify_sig, on_success.s(experiment_id)]
 
     if temp_path:
-        signatures = [move_task.s(experiment_id, temp_path)] + signatures
+        signatures = [move_task.s(experiment_id, )] + signatures
 
     if send_email and user_id:
         signatures =  signatures + [email_task.si(user_id, experiment_id)]
@@ -58,11 +57,21 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, send_email=
 
 
 @celery.task(serializer='pickle', soft_time_limit=600)
-def move_task(experiment_id, temp_path):
+def move_task(experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
+
     api.update_experiment_status(experiment_id, 'moving files')
-    copy_tree(str(temp_path), str(experiment.path), preserve_mode=0, preserve_times=0)
-    remove_tree(str(temp_path))
+    # note that it is not okay to clobber existing files
+    experiment.path.mkdir(parents=True, exist_ok=False)
+    raw_files = experiment.tmp_path.glob('*.raw')
+
+    for i, filepath in enumerate(sorted(raw_files, key=lambda f: f.stem)):
+        # rename raw files to reflect dataset name
+        # and adding _INDEX to please cimage
+        new_name = '{}_{}.raw'.format(experiment.name, str(i + 1))
+        filepath.rename(experiment.path.joinpath(new_name))
+
+    remove_tree(str(experiment.tmp_path))
 
 
 @celery.task(serializer='pickle', soft_time_limit=1800)

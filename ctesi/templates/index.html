@@ -144,12 +144,18 @@
                     <tr>
                         <th width="80%">Name</th>
                         <th>Size</th>
+                        <th>Progress</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in files">
-                        <td><strong>{{ item.name }}</strong></td>
-                        <td nowrap>{{ item.size/1024/1024 | toFixed }} MB</td>    
+                        <td><strong>{{ item.file.name }}</strong></td>
+                        <td nowrap>{{ item.file.size/1024/1024 | toFixed }} MB</td>  
+                        <td>
+                            <div v-if="item.progress" class="ui small progress individualProgress" :class="uploadStatus">
+                                <div class="bar" :style="{ width: item.progress + '%'}"></div>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
