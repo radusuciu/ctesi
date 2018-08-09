@@ -47,6 +47,29 @@ var predefinedDiffMods = {
     'PyridoxalPhosphate': { comp: { c: 8, h: 8, n: 1, o: 5, p: 1}, aa: 'k' }
 };
 
+function calculateDiffModMass(comp) {
+    var massMap = {
+        c: 12,
+        h: 1.007825,
+        o: 15.994915,
+        n: 14.003074,
+        s: 31.972072,
+        p: 30.973763,
+        h2: 2.014102,
+        c13: 13.003355,
+        n15: 15.000109,
+        hplus: 1.0072765
+    };
+
+    var mass = 0;
+
+    for (var el in comp) {
+        mass += massMap[el] * comp[el];
+    }
+
+    return mass.toFixed(6);
+}
+
 
 Vue.component('diff-mod-picker', {
     template: `
@@ -201,7 +224,12 @@ var app = new Vue({
             this.removeAllDiffMods();
 
             if (predefinedDiffMods.hasOwnProperty(this.data.type)) {
-                this.addDiffMod(predefinedDiffMods[this.data.type]);
+                var diffMods = predefinedDiffMods[this.data.type];
+
+                for (var i = 0, n = diffMods.length; i < n; i++) {
+                    diffMods[i].mass = calculateDiffModMass(diffMods[i].comp)
+                    this.addDiffMod(diffMods[i]);
+                }
             }
         }
     },
