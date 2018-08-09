@@ -184,11 +184,18 @@ def _symbolify_diff_mods(diff_mods):
 def _degen_annotate_diff_mods(diff_mods):
     # group diff mods by chemical formula not taking into account isotopic composition
     # these molecules get the same symbol
+    degen_map = {
+        'C': 'C13',
+        'H': 'H2',
+        'N': 'N15'
+    }
+
     for mod in diff_mods:
         mod['degen'] = deepcopy(mod['comp'])
-        mod['degen']['C'] += mod['degen']['C13']
-        mod['degen']['H'] += mod['degen']['H2']
-        mod['degen']['N'] += mod['degen']['N15']
-        del mod['degen']['C13'], mod['degen']['H2'], mod['degen']['N15']
+
+        for element, isotope in degen_map.items():
+            if isotope in mod['degen']:
+                mod['degen'][element] += mod['degen'][isotope]
+                del mod['degen'][isotope] 
 
     return diff_mods
