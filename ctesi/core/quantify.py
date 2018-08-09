@@ -115,7 +115,10 @@ def _make_custom_params(exp_path, params_path, diff_mods):
         for mod in mods:
             row = OrderedDict()
             for atom in params.chem_headers:
-                row[atom.upper()] = mod['comp'][atom]
+                if atom in mod['comp']:
+                    row[atom.upper()] = mod['comp'][atom]
+                else:
+                    row[atom.upper()] = 0
             if mod['light']:
                 params.light[mod['symbol']] = row
             if mod['heavy']:
