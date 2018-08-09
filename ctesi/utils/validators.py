@@ -26,7 +26,9 @@ def _validate_diff_mods(diff_mods):
         if float(mod['mass']) > 0 and validate_protein(mod['aa']):
             # make sure we aren't repeating amino acids
             mod['aa'] = ''.join(set(mod['aa']))
-            valid_mods.append(mod)
+
+            # make sure amino acid is uppercase else IP2/Prolucid will not find anything
+            mod['aa'] = mod['aa'].upper()
 
             # keep composition keyed by uppercase amino acids for consistency
             mod['comp'] = dict(zip(
@@ -37,6 +39,8 @@ def _validate_diff_mods(diff_mods):
             # make sure we have light and heavy options set
             mod['light'] = mod.get('light') or False
             mod['heavy'] = mod.get('heavy') or False
+
+            valid_mods.append(mod)
 
     return valid_mods
 
