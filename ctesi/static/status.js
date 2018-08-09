@@ -7,6 +7,10 @@ var app = new Vue({
     },
     methods: {
         getExperiments: function() {
+            if (document.hidden) {
+                return;
+            }
+
             axios.get('/api/').then(function(response) {
                 if (response.data.hash === this.hash) {
                     return;

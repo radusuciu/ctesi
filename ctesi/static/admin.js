@@ -5,6 +5,10 @@ var app = new Vue({
     },
     methods: {
         getExperiments: function() {
+            if (document.hidden) {
+                return;
+            }
+
             axios.get('/api/admin').then(function(response) {
                 this.experiments = response.data.experiments;
             }.bind(this));
