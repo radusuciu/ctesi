@@ -135,6 +135,23 @@ def ip2_auth():
         abort(HTTPStatus.UNAUTHORIZED)
 
 
+@api_blueprint.route('/check_ip2_cookie', methods=['POST'])
+def check_ip2_cookie():
+    username = session.get('ip2_username')
+    ip2 = IP2(config.IP2_URL, username)
+
+    try:
+        cookie = pickle.loads(session.get('ip2_cookie'))
+        ip2.cookie_login(cookie)
+    except:
+        pass
+
+    if ip2.logged_in:
+        return jsonify(ip2.logged_in)
+    else:
+        abort(HTTPStatus.UNAUTHORIZED)
+
+
 @api_blueprint.route('/rerun/<int:experiment_id>/<string:step>')
 @requires(can_edit_experiment)
 def rerun_processing(experiment_id, step):
@@ -148,7 +165,7 @@ def rerun_processing(experiment_id, step):
     if experiment.task_id:
         api.cancel_experiment(experiment_id)
 
-    ip2_auth()
+    check_ip2_cookie()
 
     result = process(
         experiment_id,
