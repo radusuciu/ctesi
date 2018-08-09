@@ -372,10 +372,13 @@ var app = new Vue({
                 var progress = Math.round(progressEvent.loaded / progressEvent.total * 100);
                 file.progress = progress;
 
+                var totalProgress = 0;
                 // keeping track of overall progress
-                this.progress = _.reduce(this.files, function(memo, num) {
-                    return memo.progress + num.progress;
-                }) / this.files.length;
+                for (var i = 0, n = this.files.length; i < n; i++) {
+                    totalProgress += this.files[i].progress;
+                }
+
+                this.progress = totalProgress / this.files.length;
             };
 
             var requests = [];
