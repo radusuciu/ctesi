@@ -1,9 +1,10 @@
-from flask import Blueprint, abort, jsonify, request, session
-from flask_login import login_required, current_user
-from flask_principal import Permission, RoleNeed
+from flask import Blueprint, abort, jsonify, request, session, current_app
+from flask_login import current_user
+from flask_allows import requires
 from werkzeug import secure_filename
 from ctesi.core.tasks import process
 from ctesi.utils import validate_search_params
+from ctesi.core.requirements import is_admin, can_edit_experiment
 from ctesi import celery as celery_app
 from http import HTTPStatus
 from ip2api import IP2
@@ -14,15 +15,17 @@ import json
 import hashlib
 
 
-admin_permission = Permission(RoleNeed('admin'))
-
 api_blueprint = Blueprint('api_blueprint', __name__,
                   template_folder='templates',
                   static_folder='static')
 
+@api_blueprint.before_request
+def is_logged_in():
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
 
 @api_blueprint.route('/')
-@login_required
 def get_experiments():
     experiments = api.get_user_experiments(current_user.get_id())
     experiments['hash'] = hashlib.sha1(json.dumps(experiments, sort_keys=True).encode('utf-8')).hexdigest()
@@ -30,13 +33,12 @@ def get_experiments():
 
 
 @api_blueprint.route('/admin')
-@admin_permission.require(http_exception=404)
+@requires(is_admin)
 def get_all_experiments():
     return jsonify(api.get_all_experiments())
 
 
 @api_blueprint.route('/experiment', methods=['POST'])
-@login_required
 def new_experiment():
     data = request.json
     data['name'] = secure_filename(data['name'])
@@ -48,7 +50,7 @@ def new_experiment():
 
     (experiment_model, experiment_serialized) = api.add_experiment({
         'name': data['name'],
-        'user_id': current_user.get_id(),
+        'user_id': current_user.id,
         'experiment_type': data['type'],
         'organism': data['organism'],
         'status': api.make_experiment_status_string('incomplete'),
@@ -59,7 +61,7 @@ def new_experiment():
 
 
 @api_blueprint.route('/upload_file/<int:experiment_id>', methods=['POST'])
-@login_required
+@requires(can_edit_experiment)
 def add_file(experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
     api.update_experiment_status(experiment_id, 'uploading')
@@ -79,13 +81,14 @@ def add_file(experiment_id):
 
 
 @api_blueprint.route('/process/<int:experiment_id>')
+@requires(can_edit_experiment)
 def process_experiment(experiment_id):
     result = process(
         experiment_id,
         session['ip2_username'],
         session['ip2_cookie'],
         temp_path='temp',
-        user_id=current_user.get_id(),
+        user_id=current_user.id,
         send_email=True
     )
 
@@ -97,14 +100,18 @@ def process_experiment(experiment_id):
 
 
 @api_blueprint.route('/status/<int:experiment_id>')
+@requires(can_edit_experiment)
 def status(experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
-    task = celery_app.AsyncResult(experiment.task_id)
-    return task.state
+
+    if experiment:
+        task = celery_app.AsyncResult(experiment.task_id)
+        return task.state
+    else:
+        return jsonify({'error': 'experiment not found'})
 
 
 @api_blueprint.route('/ip2_auth', methods=['POST'])
-@login_required
 def ip2_auth():
     username = request.json.get('username') or session.get('ip2_username')
     password = request.json.get('password')
@@ -129,7 +136,7 @@ def ip2_auth():
 
 
 @api_blueprint.route('/rerun/<int:experiment_id>/<string:step>')
-@login_required
+@requires(can_edit_experiment)
 def rerun_processing(experiment_id, step):
     steps = ['convert', 'search', 'cimage']
 
@@ -141,25 +148,21 @@ def rerun_processing(experiment_id, step):
     if experiment.task_id:
         api.cancel_experiment(experiment_id)
 
-    if ip2_auth() and (experiment.user_id == int(current_user.get_id()) or current_user.has_role('admin')):
-        result = process(
-            experiment_id,
-            session['ip2_username'],
-            session['ip2_cookie'],
-            user_id=current_user.get_id(),
-            from_step=step
-        )
+    ip2_auth()
+
+    result = process(
+        experiment_id,
+        session['ip2_username'],
+        session['ip2_cookie'],
+        user_id=current_user.get_id(),
+        from_step=step
+    )
 
     return 'ok'
 
 
 @api_blueprint.route('/delete/<int:experiment_id>')
-@login_required
+@requires(can_edit_experiment)
 def delete_experiment(experiment_id):
-    experiment = api.Experiment.query.get(experiment_id)
-
-    if experiment.user_id == int(current_user.get_id()) or current_user.has_role('admin'):
-        api.delete_experiment(experiment_id)
-        return 'ok'
-    else:
-        return 'insufficient permissions'
+    api.delete_experiment(experiment_id)
+    return 'ok'
