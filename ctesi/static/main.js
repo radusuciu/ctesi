@@ -366,7 +366,7 @@ var app = new Vue({
         },
 
         _submitFiles: function() {
-            var url = '/api/upload_file/' + this.experimentId;
+            var url = '/api/upload/' + this.experimentId;
 
             var progress = function(file, progressEvent) {
                 var progress = Math.round(progressEvent.loaded / progressEvent.total * 100);

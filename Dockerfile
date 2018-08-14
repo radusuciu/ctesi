@@ -21,7 +21,7 @@ RUN ln -s /home/ctesi/cimage-minimal/cimage2 /usr/local/bin
 RUN ln -s /home/ctesi/cimage-minimal/cimage_combine /usr/local/bin
 ENV CIMAGE_PATH /home/ctesi/cimage-minimal
 
-RUN mkdir -p /data/tmp
+RUN mkdir -p /data/tmp /data/nginx_upload
 RUN mkdir /finished
 RUN chown ctesi:ctesi -R /data /finished
 

@@ -40,13 +40,14 @@ services:
     nginx:
         image: nginx
         volumes:
-            - ./config/nginx.conf:/etc/nginx/ctesi.conf
-            - ./ctesi/static:/usr/share/nginx/html/static
+            - data:/data
+            - ./config/nginx:/custom_nginx_config
+            - ./ctesi/static:/usr/share/nginx/html/staticdoc
         ports:
             - '80:80'
         environment:
             NGINX_HOST: 'localhost'
-        command: /bin/bash -c "envsubst '$$NGINX_HOST' < /etc/nginx/ctesi.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+        command: /bin/bash -c "envsubst '$$NGINX_HOST' < /custom_nginx_config/nginx.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
 volumes:
     data:
     finished_mirror:

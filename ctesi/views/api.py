@@ -8,6 +8,7 @@ from ctesi.core.requirements import is_admin, can_edit_experiment
 from ctesi import celery as celery_app
 from http import HTTPStatus
 from ip2api import IP2
+import pathlib
 import config.config as config
 import ctesi.api as api
 import pickle
@@ -59,6 +60,22 @@ def new_experiment():
 
     return jsonify({'experiment_id': experiment_model.data.experiment_id})
 
+
+@api_blueprint.route('/upload/<int:experiment_id>', methods=['POST'])
+def fast_upload(experiment_id):
+    experiment = api.get_raw_experiment(experiment_id)
+
+    from_path = pathlib.Path(request.form['path'])
+    filename = secure_filename(request.form['name'])
+    dest_path = experiment.tmp_path.joinpath(filename)
+    # making sure we use lowercase extension
+    dest_path = dest_path.with_suffix(dest_path.suffix.lower())
+
+    # only allow .raw extension
+    if dest_path.suffix == '.raw':
+        experiment.tmp_path.mkdir(exist_ok=True, parents=True)
+        from_path.rename(dest_path)
+        return 'ok'
 
 @api_blueprint.route('/upload_file/<int:experiment_id>', methods=['POST'])
 @requires(can_edit_experiment)
