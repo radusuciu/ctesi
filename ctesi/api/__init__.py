@@ -61,15 +61,12 @@ def add_experiment(data):
     return (experiment, experiment_schema.dump(experiment.data).data)
 
 
-def make_experiment_status_string(status):
-    if isinstance(status, str):
-        status = { 'step': status }
-    return json.dumps(status)
+def make_experiment_status_string(status, meta={}):
+    return json.dumps({ 'state': status, 'meta': meta })
 
-
-def update_experiment_status(experiment_id, status):
+def update_experiment_status(experiment_id, status, meta={}):
     experiment = Experiment.query.get(experiment_id)
-    experiment.status = make_experiment_status_string(status)
+    experiment.status = make_experiment_status_string(status, meta)
 
     try:
         # can throw an exception if the experiment disappears before the update can be done
@@ -103,7 +100,7 @@ def delete_experiment(experiment_id, force=False):
         experiment = Experiment.query.get(experiment_id)
         experiment_serialized = get_experiment(experiment_id)
 
-        status = experiment_serialized['status']['step']
+        status = experiment_serialized['status']['state']
 
         if force or status in ('done', 'error', 'cancelled'):
             if experiment.path.exists():

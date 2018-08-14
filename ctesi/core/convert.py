@@ -11,6 +11,7 @@ def convert(path, success_callback=None, status_callback=None):
     # poll every 30 seconds
     polling_interval = 30
     running = True
+    status = None
 
     while running:
         start = time.clock()
@@ -24,11 +25,13 @@ def convert(path, success_callback=None, status_callback=None):
                 running = False
                 if success_callback:
                     success_callback(status)
-
-                return status
+            elif status['status'] == 'fail':
+                running = False
 
         work_duration = time.clock() - start
         time.sleep(polling_interval - work_duration)
+
+    return status
 
 
 def cancel_convert(path):

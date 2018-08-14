@@ -19,7 +19,7 @@ var app = new Vue({
                 this.hash = response.data.hash;
 
                 this.experiments = _.sortBy(response.data.experiments, [function(el) {
-                    if (el.status.step === 'done') {
+                    if (el.status.state === 'done') {
                         return el.experiment_id + Math.pow(10, 10);
                     } else {
                         return el.experiment_id;

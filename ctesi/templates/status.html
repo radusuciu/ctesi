@@ -28,15 +28,15 @@
                 <td>{{ e.organism }}</td>
                 <td>{{ e.experiment_type }}</td>
                 <td>{{ e.date | prettyDate}}</td>
-                <td v-if="e.status" :class="{ error: e.status.step === 'error'}">
-                    <div v-if="e.status.progress" class="ui top attached progress">
-                        <div class="bar" :style="{ width: e.status.progress + '%'}"></div>
+                <td v-if="e.status" :class="{ error: e.status.state === 'error'}">
+                    <div v-if="e.status.meta.progress" class="ui top attached progress">
+                        <div class="bar" :style="{ width: e.status.meta.progress + '%'}"></div>
                     </div>
-                    {{ e.status.step }}
+                    {{ e.status.state }}
                 </td>
                 <td class="error" v-else></td>
                 <td class="right aligned">
-                    <a v-if="e.status.step === 'done'" :href="'/zip/' + e.experiment_id"><i class="download icon"></i></a>
+                    <a v-if="e.status.state === 'done'" :href="'/zip/' + e.experiment_id"><i class="download icon"></i></a>
                     <i class="remove icon" @click="remove(e, index)"></i>
                 </td>
             </tr>

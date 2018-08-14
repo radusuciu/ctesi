@@ -9,6 +9,7 @@ from ctesi.core.convert import convert
 from ctesi.core.quantify import quantify
 from ctesi.core.search import Search
 from ctesi.utils import send_mail
+from ctesi.api import update_experiment_status as update_status
 import config.config as config
 import ctesi.api as api
 import functools
@@ -58,9 +59,9 @@ def process(experiment_id, ip2_username, ip2_cookie, temp_path=None, send_email=
 
 @celery.task(serializer='pickle', soft_time_limit=600)
 def move_task(experiment_id):
+    update_status(experiment_id, 'moving files')
     experiment = api.get_raw_experiment(experiment_id)
 
-    api.update_experiment_status(experiment_id, 'moving files')
     # note that it is not okay to clobber existing files
     experiment.path.mkdir(parents=True, exist_ok=False)
     raw_files = experiment.tmp_path.glob('*.raw')
@@ -82,7 +83,7 @@ def convert_task(experiment_id):
 
     convert_status = convert(
         corrected_path.as_posix(),
-        status_callback=functools.partial(update_conversion_status, experiment_id)
+        status_callback=lambda s: update_status(experiment_id, 'converting', meta=s),
     )
 
     if not convert_status:
@@ -94,16 +95,17 @@ def convert_task(experiment_id):
 @celery.task(serializer='pickle', soft_time_limit=172800)
 def search_task(convert_status, experiment_id, ip2_username, ip2_cookie):
     experiment = api.get_raw_experiment(experiment_id)
-    api.update_experiment_status(experiment_id, 'submitting to ip2')
+    update_status(experiment_id, 'submitting to ip2')
     search = Search('{}_{}'.format(experiment.name, str(experiment_id)))
     search.login(ip2_username, cookie=ip2_cookie)
+
 
     # initiate IP2 search
     dta_select_link = search.search(
         experiment.organism,
         experiment.experiment_type,
         list(pathlib.Path(experiment.path).glob('*.raw')),
-        status_callback=functools.partial(update_search_status, experiment_id),
+        status_callback=lambda j: update_status(experiment_id, 'searching', meta={'status': j.info['message'], 'progress': j.progress * 100 or 0 }),
         search_params=json.loads(experiment.search_params)
     )
 
@@ -114,7 +116,8 @@ def search_task(convert_status, experiment_id, ip2_username, ip2_cookie):
 def quantify_task(dta_select_link, experiment_id, setup_dta=True):
     experiment = api.get_raw_experiment(experiment_id)
     path = pathlib.Path(experiment.path)
-    api.update_experiment_status(experiment_id, 'cimage')
+
+    update_status(experiment_id, 'cimage')
 
     ret = quantify(
         experiment.name,
@@ -150,7 +153,7 @@ def email_task(self, user_id, experiment_id):
 
 @celery.task
 def on_error(request, exc, traceback, experiment_id):
-    api.update_experiment_status(experiment_id, 'error')
+    update_status(experiment_id, 'error')
 
 
 @celery.task
@@ -176,34 +179,4 @@ def on_success(quant_result, experiment_id):
 
     copy_tree(str(experiment.path), str(finished_path), preserve_mode=False, preserve_times=False)
 
-    api.update_experiment_status(experiment_id, 'done')
-
-
-def update_conversion_status(experiment_id, status):
-    '''Update status of file conversion operation.
-    
-    Arguments:
-        status {dict} -- Returned from cravatt-rawprocessor
-        experiment_id {int} -- Experiment id to perform status update on
-    '''
-
-    api.update_experiment_status(experiment_id, {
-        'step': 'converting',
-        'status': status['status'],
-        'progress': status['progress'] or 0
-    })
-
-
-def update_search_status(experiment_id, ip2job):
-    '''Update status of IP2 search.
-    
-    Arguments:
-        status {dict} -- Returned from cravatt-rawprocessor
-        experiment_id {int} -- Experiment id to perform status update on
-    '''
-
-    api.update_experiment_status(experiment_id, {
-        'step': 'searching',
-        'status': ip2job.info['message'],
-        'progress': ip2job.progress * 100 or 0
-    })
+    update_status(experiment_id, 'done')
