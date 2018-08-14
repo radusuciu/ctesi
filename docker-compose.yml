@@ -17,6 +17,10 @@ services:
             - finished_mirror:/finished
         tty: true
         stdin_open: true
+        depends_on:
+            - "flask-readw"
+            - "rabbitmq"
+            - "redis"
     flask-readw:
         image: radusuciu/flask-readw
         environment:
@@ -47,6 +51,8 @@ services:
             - '80:80'
         environment:
             NGINX_HOST: 'localhost'
+        depends_on:
+            - "ctesi"
         command: /bin/bash -c "envsubst '$$NGINX_HOST' < /custom_nginx_config/nginx.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
 volumes:
     data:
