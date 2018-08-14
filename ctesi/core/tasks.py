@@ -1,10 +1,8 @@
 """Define processing actions for celery task queue."""
-from collections import OrderedDict
 from celery import chain
 from celery.exceptions import TaskError
 from distutils.dir_util import copy_tree, remove_tree
-import smtplib
-from ctesi import db, celery, app
+from ctesi import db, celery
 from ctesi.core.convert import convert
 from ctesi.core.quantify import quantify
 from ctesi.core.search import Search
@@ -12,7 +10,6 @@ from ctesi.utils import send_mail
 from ctesi.api import update_experiment_status as update_status
 import config.config as config
 import ctesi.api as api
-import functools
 import pathlib
 import json
 import pickle
