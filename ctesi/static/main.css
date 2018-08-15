@@ -17,12 +17,13 @@ html, body {
     visibility: hidden;
 }
 
-.progress .label {
+.ui.progress .label {
     text-transform:capitalize;
 }
 
-.progress .bar {
+.ui.progress .bar {
     transition-duration:300ms;
+    min-width:0.2em;
 }
 
 .individualProgress {
