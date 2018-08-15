@@ -33,6 +33,11 @@ def get_experiments():
     return jsonify(experiments)
 
 
+@api_blueprint.route('/is_logged_in')
+def check_if_logged_in():
+    # all routes are protected for user being logged in
+    return 'ok'
+
 @api_blueprint.route('/admin')
 @requires(is_admin)
 def get_all_experiments():
@@ -62,6 +67,7 @@ def new_experiment():
 
 
 @api_blueprint.route('/upload/<int:experiment_id>', methods=['POST'])
+@requires(can_edit_experiment)
 def fast_upload(experiment_id):
     experiment = api.get_raw_experiment(experiment_id)
 
