@@ -83,25 +83,6 @@ def fast_upload(experiment_id):
         from_path.rename(dest_path)
         return 'ok'
 
-@api_blueprint.route('/upload_file/<int:experiment_id>', methods=['POST'])
-@requires(can_edit_experiment)
-def add_file(experiment_id):
-    experiment = api.get_raw_experiment(experiment_id)
-    api.update_experiment_status(experiment_id, 'uploading')
-
-    file = request.files.getlist('files')[0]
-    filename = secure_filename(file.filename)
-    filepath = experiment.tmp_path.joinpath(filename)
-    # making sure we use lowercase extension
-    filepath = filepath.with_suffix(filepath.suffix.lower())
-
-    # only allow .raw extension
-    if filepath.suffix == '.raw':
-        experiment.tmp_path.mkdir(exist_ok=True, parents=True)
-        file.save(str(filepath))
-
-    return 'ok'
-
 
 @api_blueprint.route('/process/<int:experiment_id>')
 @requires(can_edit_experiment)
