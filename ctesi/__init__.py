@@ -1,5 +1,5 @@
 """Backend for a proteomics database."""
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, render_template
 from ctesi.ldap import LDAPUserDatastore, LDAPLoginForm
 from http import HTTPStatus
 from redis import StrictRedis
@@ -36,5 +36,6 @@ user_datastore = LDAPUserDatastore(db, User, Role)
 security = Security(app, user_datastore, login_form=LDAPLoginForm)
 
 @app.errorhandler(HTTPStatus.UNAUTHORIZED)
-def unauthorized(error):
-    return make_response(jsonify({'error': error.description}), error.code)
+@app.errorhandler(HTTPStatus.NOT_FOUND)
+def error(error):
+    return render_template('error.html', error=error), error.code
