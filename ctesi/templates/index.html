@@ -152,7 +152,7 @@
                         <td><strong>{{ item.file.name }}</strong></td>
                         <td nowrap>{{ item.file.size/1024/1024 | toFixed }} MB</td>  
                         <td>
-                            <div v-if="item.progress" class="ui small progress individualProgress" :class="uploadStatus">
+                            <div v-if="item.progress" class="ui small progress individualProgress" :class="item.status">
                                 <div class="bar" :style="{ width: item.progress + '%'}"></div>
                             </div>
                         </td>
