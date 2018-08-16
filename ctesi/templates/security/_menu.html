@@ -12,7 +12,7 @@
     {% else %}
 
     {{ menu_item('login', 'Login', true) }}
-    {% if security.recoverable %}
+    {% if security.registerable %}
     {{ menu_item('register', 'Register', true) }}
     {% endif %}
 
