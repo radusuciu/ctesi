@@ -389,6 +389,7 @@ var app = new Vue({
                 formData.append('files', f.file, f.file.name);
 
                 f.progress = 0;
+                f.status = '';
 
                 requests.push(axios.post(url, formData, {
                     onUploadProgress: progress.bind(this, f)
