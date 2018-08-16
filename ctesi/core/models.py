@@ -46,7 +46,8 @@ class User(db.Model, UserMixin):
 
     @username.expression
     def username(cls):
-        return func.split_part(cls.email, '@', 1)
+        # sqlite does not have a splitstr function
+        return func.substr(cls.email, 1, func.instr(cls.email, '@') - 1)
 
 
 class UserSchema(Schema):
