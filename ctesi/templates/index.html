@@ -166,7 +166,7 @@
                 <div class="label">{{ uploadStatus }} Uploading Files</div>
             </div>
         </div>
-        <div class="ui file-upload field">
+        <div class="ui file-upload field" :class="{ disabled: disabled }">
             <span class="ui error message">{{ errors.first('file-select') }}</span>
             <button class="ui primary button" type="submit">Submit</button>
             <button type="button" class="ui green button" onclick="document.getElementById('file-select').click()">

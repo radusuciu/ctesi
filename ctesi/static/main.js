@@ -209,6 +209,7 @@ var app = new Vue({
         },
         diffMods: [],
         progress: 0,
+        disabled: false,
         uploadStatus: '',
         advanced: false,
         askForIP2: true,
@@ -326,10 +327,15 @@ var app = new Vue({
         },
 
         _onSubmit: function() {
-            if (!this._isValid()) return;
+            if (!this._isValid() || this.disabled) {
+                return;
+            }
 
             this.uploadStatus = '';
             this.experimentId = null;
+
+            // disable form once we start submit process
+            this.disabled = true;
 
             // this.data stores data that will be sent to server
             this.data.diffMods = this.diffMods;
@@ -351,6 +357,10 @@ var app = new Vue({
                 .then(this._startProcessing)
                 .then(onSuccess)
                 .catch(onError)
+                .then(function() {
+                    // enable form for re-submission regardless of outcome
+                    this.disabled = false;
+                }.bind(this));
         },
 
         _startProcessing: function() {
