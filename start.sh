@@ -4,6 +4,10 @@ PROJECT_HOME="/home/ctesi/ctesi"
 # install requirements in virtual environment
 cd "${PROJECT_HOME}" || exit
 
+# clean temporary files
+rm -rf /data/nginx_upload/*
+rm -rf /data/tmp/*
+
 if [ ! -d venv ]; then
     python3.5 -m venv venv
     source venv/bin/activate
@@ -21,7 +25,7 @@ if [ ! -f requirements.txt ]; then
 fi
 
 
-pip install --process-dependency-links -r requirements.txt 
+pip install --process-dependency-links -r requirements.txt
 
 # start celery daemon
 rm celeryd.pid celery.log
