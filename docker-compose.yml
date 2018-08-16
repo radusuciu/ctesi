@@ -42,7 +42,7 @@ services:
         image: redis
         hostname: redis
     nginx:
-        image: nginx
+        image: nginx:1.15.0
         volumes:
             - data:/data
             - ./config/nginx:/custom_nginx_config
