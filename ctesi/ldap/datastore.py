@@ -3,6 +3,9 @@
 import ldap3
 from flask_security.datastore import SQLAlchemyUserDatastore
 from flask_security.utils import config_value
+from ldap3.core.exceptions import LDAPExceptionError
+from ctesi.core.exceptions import UserNotFoundInLDAP
+
 
 
 class LDAPUserDatastore(SQLAlchemyUserDatastore):
@@ -29,6 +32,7 @@ class LDAPUserDatastore(SQLAlchemyUserDatastore):
     def query_ldap_user(self, identifier):
         """Get information about a user throught AD."""
         con = self._get_ldap_con()
+
         result = con.search(
             search_base=config_value('LDAP_BASE_DN'),
             search_filter=config_value('LDAP_SEARCH_FILTER').format(identifier),
@@ -42,7 +46,7 @@ class LDAPUserDatastore(SQLAlchemyUserDatastore):
         if result and data:
             return (data[0]['DistinguishedName'].value, data[0])
         else:
-            return (None, None)
+            raise UserNotFoundInLDAP
 
     def verify_password(self, user_dn, password):
         """Attempt to authenticate against AD."""

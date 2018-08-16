@@ -8,6 +8,7 @@ from flask_security.forms import Form, NextFormMixin, get_form_field_label
 from flask_security.utils import config_value, get_message, verify_and_update_password, encrypt_password
 from flask_security.confirmable import requires_confirmation
 from ldap3.core.exceptions import LDAPExceptionError
+from ctesi.core.exceptions import UserNotFoundInLDAP
 
 _datastore = LocalProxy(lambda: current_app.extensions['security'].datastore)
 
@@ -45,11 +46,8 @@ class LDAPLoginForm(Form, NextFormMixin):
             return False
 
         try:
+            # first we try authenticating against ldap
             user_dn, ldap_data = _datastore.query_ldap_user(self.email.data)
-
-            if user_dn is None:
-                self.email.errors.append(get_message('USER_DOES_NOT_EXIST')[0])
-                return False
 
             if not _datastore.verify_password(user_dn, self.password.data):
                 self.password.errors.append(get_message('INVALID_PASSWORD')[0])
@@ -66,19 +64,30 @@ class LDAPLoginForm(Form, NextFormMixin):
                 self.user = _datastore.create_user(email=ldap_email, password=password)
                 _datastore.commit()
         except LDAPExceptionError:
-            self.password.errors.append(get_message('LDAP_SERVER_DOWN')[0])
-            self.user = _datastore.get_user(self.email.data)
-            if not self.user.password:
-                self.password.errors.append(get_message('PASSWORD_NOT_SET')[0])
-                return False
-            if not verify_and_update_password(self.password.data, self.user):
-                self.password.errors.append(get_message('INVALID_PASSWORD')[0])
-                return False
-            if requires_confirmation(self.user):
-                self.email.errors.append(get_message('CONFIRMATION_REQUIRED')[0])
-                return False
-            if not self.user.is_active:
-                self.email.errors.append(get_message('DISABLED_ACCOUNT')[0])
-                return False
+            self.email.errors.append(get_message('LDAP_SERVER_DOWN')[0])
+            return self._try_local_auth()
+        except UserNotFoundInLDAP:
+            return self._try_local_auth()
+
+        return True
+
+    def _try_local_auth(self):
+        self.user = _datastore.get_user(self.email.data)
+
+        if not self.user:
+            self.email.errors.append(get_message('USER_DOES_NOT_EXIST')[0])
+            return False
+        if not self.user.password:
+            self.password.errors.append(get_message('PASSWORD_NOT_SET')[0])
+            return False
+        if not verify_and_update_password(self.password.data, self.user):
+            self.password.errors.append(get_message('INVALID_PASSWORD')[0])
+            return False
+        if requires_confirmation(self.user):
+            self.email.errors.append(get_message('CONFIRMATION_REQUIRED')[0])
+            return False
+        if not self.user.is_active:
+            self.email.errors.append(get_message('DISABLED_ACCOUNT')[0])
+            return False
 
         return True
