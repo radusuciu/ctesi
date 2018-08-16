@@ -24,6 +24,8 @@ ENV CIMAGE_PATH /home/ctesi/cimage-minimal
 RUN mkdir -p /data/tmp /data/nginx_upload
 RUN mkdir /finished
 RUN chown ctesi:ctesi -R /data /finished
+RUN chgrp -R ctesi /data/nginx_upload
+RUN chmod 775 /data/nginx_upload
 
 USER ctesi
 WORKDIR /home/ctesi/ctesi
