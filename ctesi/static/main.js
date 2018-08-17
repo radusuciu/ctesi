@@ -404,10 +404,16 @@ var app = new Vue({
                 requests.push(axios.post(url, formData, {
                     onUploadProgress: progress.bind(this, f)
                 }).then(function(response) {
-                    f.status = 'success';
-                }).catch(function(errors) {
-                    f.status = 'error';
-                }));
+                    // note that `this` is bound to f
+                    // if this is not done, then all the callbacks
+                    // will refer to the last f in the loop
+                    this.status = 'success';
+                }.bind(f)).catch(function(errors) {
+                    this.status = 'error';
+                    // rejecting promise to be handled be caught after all of these
+                    // are wrapped by axios.all
+                    return Promise.reject();
+                }.bind(f)));
             }
 
             return axios.all(requests);
