@@ -53,7 +53,7 @@ def combine(path, experiment_type, dta_folder='dta'):
         dta_folder
     ]
 
-    if experiment_type is not 'isotop':
+    if experiment_type != 'isotop':
         args.insert(1, 'by_protein')
 
     return subprocess.Popen(args, cwd=str(path)).wait()
