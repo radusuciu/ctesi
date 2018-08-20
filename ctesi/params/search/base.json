@@ -1,0 +1,344 @@
+{
+    "search_type": {
+        "default": "",
+        "options": ["cluster", "cloud"],
+        "description": "Computational resource to run the analysis",
+        "ip2_alias": "searchType",
+        "allowCustom": false
+    },
+    "search_name": {
+        "default": "",
+        "description": "Search Name",
+        "ip2_alias": "searchName",
+        "allowCustom": false
+    },
+    "activation_method": {
+        "default": "CID",
+        "options": ["CID", "ETD"],
+        "optionsMap": ["CID/HDC", "ETD"],
+        "description": "Fragmentation/activation method",
+        "ip2_alias": "sp.activationMethod",
+        "allowCustom": false
+    },
+    "precursor_isotope": {
+        "default": "mono",
+        "options": ["mono", "average"],
+        "description": "Precursor mass type",
+        "ip2_alias": "sp.precursorIsotope",
+        "allowCustom": false
+    },
+    "fragment_isotope": {
+        "default": "mono",
+        "options": ["mono", "average"],
+        "description": "Fragment mass type",
+        "ip2_alias": "sp.fragmentIsotope",
+        "allowCustom": false
+    },
+    "mass_resolution": {
+        "default": "high",
+        "description": "Instrument mass resolution",
+        "ip2_alias": "sp.resolution",
+        "allowCustom": false
+    },
+    "precursor_tolerance": {
+        "default": "50.0",
+        "description": "Precursor/peptide mass tolerance",
+        "ip2_alias": "sp.precursorTolerance",
+        "allowCustom": false
+    },
+    "num_isotopic_peaks": {
+        "default": "3",
+        "description": "Number of isotopic peaks",
+        "ip2_alias": "sp.numIsotopicPeaks",
+        "allowCustom": false
+    },
+    "min_precursor_mass": {
+        "default": "600.0",
+        "description": "Minimum precursor mass",
+        "ip2_alias": "sp.minPrecursorMass",
+        "allowCustom": false
+    },
+    "max_precursor_mass": {
+        "default": "6000.0",
+        "description": "Maximum precursor mass",
+        "ip2_alias": "sp.maxPrecursorMass",
+        "allowCustom": false
+    },
+    "fragment_tolerance": {
+        "default": "600.0",
+        "description": "Fragment mass tolerance in ppm",
+        "ip2_alias": "sp.fragmentTolerance",
+        "allowCustom": false
+    },
+    "enzyme_specificity": {
+        "default": "1",
+        "options": ["0", "1", "2"],
+        "optionMap": ["none", "one end", "both ends"],
+        "description": "Enzyme specificity (one end vs. both ends)",
+        "ip2_alias": "sp.enzymeSpecificity",
+        "allowCustom": false
+    },
+    "max_internal_miscleavage": {
+        "default": "-1",
+        "options": ["0", "1", "2", "3", "4", "-1"],
+        "description": "Max num internal missed cleavage",
+        "ip2_alias": "sp.maxInternalMisCleavage",
+        "allowCustom": false
+    },
+    "enzyme_name": {
+        "default": "trypsin",
+        "description": "Protease name",
+        "ip2_alias": "sp.enzymeName",
+        "allowCustom": false
+    },
+    "enzyme_residues": {
+        "default": "KR",
+        "description": "Residues cut by enzyme",
+        "ip2_alias": "sp.enzymeResidues",
+        "allowCustom": false
+    },
+    "cut_position": {
+        "default": "true",
+        "options": ["true", "false"],
+        "description": "Enzyme cuts on cterm?",
+        "ip2_alias": "sp.cutPosition",
+        "allowCustom": false
+    },
+    "n_term_static_mod": {
+        "default": "",
+        "description": "N-term static modification",
+        "ip2_alias": "sp.nTermStaticMod",
+        "allowCustom": false
+    },
+    "c_term_static_mod": {
+        "default": "",
+        "description": "C-term static modification",
+        "ip2_alias": "sp.cTermStaticMod",
+        "allowCustom": false
+    },
+    "static_mods": {
+        "default": [ "" ],
+        "description": "Amino acid residue specific static modification",
+        "ip2_alias": "sp.staticmods",
+        "allowCustom": false
+    },
+    "scan_number": {
+        "default": "4000",
+        "description": "Max. # of scans in split spectral files",
+        "ip2_alias": "sp.scanNumber",
+        "allowCustom": false
+    },
+    "max_num_diff_mod": {
+        "default": "1",
+        "description": "Maximum number of internal diff mods",
+        "ip2_alias": "sp.maxNumDiffmod",
+        "allowCustom": true
+    },
+    "diff_mods": {
+        "default": [ "" ],
+        "description": "Differential modifications",
+        "ip2_alias": "sp.diffmods",
+        "allowCustom": true
+    },
+    "include_heavy_search": {
+        "default": "no",
+        "options": ["yes", "no"],
+        "description": "Include heavy isotopic labeling search?",
+        "ip2_alias": "sp.includeHeavySearch",
+        "allowCustom": false
+    },
+    "is_n15_search": {
+        "default": "no",
+        "options": ["yes", "no"],
+        "description": "Is the metabolic labeling type N15?",
+        "ip2_alias": "sp.isN15Search",
+        "allowCustom": false
+    },
+    "heavy_atomic_enrichment": {
+        "default": null,
+        "description": "Metabolic labeling efficiency",
+        "ip2_alias": "sp.heavyAtomicEnrichment",
+        "allowCustom": false
+    },
+    "heavy_mods": {
+        "default": null,
+        "description": "Static mods for heavy search",
+        "ip2_alias": "sp.heavymods",
+        "allowCustom": false
+    },
+    "primary_score_type": {
+        "default": "1",
+        "options": ["0", "1"],
+        "optionMap": ["probability", "XCorr"],
+        "description": "Primary score type",
+        "ip2_alias": "sp.primaryScoreType",
+        "allowCustom": false
+    },
+    "secondary_score_type": {
+        "default": "2",
+        "options": ["0", "1", "2", "3", "4"],
+        "optionMap": ["probability", "XCorr", "Zscore", "p-value", "e-value"],
+        "description": "Secondary score type",
+        "ip2_alias": "sp.secondaryScoreType",
+        "allowCustom": false
+    },
+    "is_decharged": {
+        "default": "0",
+        "options": ["0", "1"],
+        "optionMap": ["no", "yes"],
+        "description": "Are MS/MS spectra deisotoped and decharged",
+        "ip2_alias": "sp.isDeCharged",
+        "allowCustom": false
+    },
+    "multistage_activation_mode": {
+        "default": "0",
+        "options": ["0", "1", "2"],
+        "optionMap": ["consider only non-neutral loss peaks", "consider both neutral loss and non-neutral loss peaks", "consider only neutral loss peaks"],
+        "description": "Multistage Activation Mode",
+        "ip2_alias": "sp.msaMode",
+        "allowCustom": false
+    },
+    "min_peptide_length": {
+        "default": "6",
+        "description": "Minimum peptide length",
+        "ip2_alias": "sp.minimumPeptideLength",
+        "allowCustom": false
+    },
+    "candidate_peptide_threshold": {
+        "default": "500",
+        "description": "Candidate peptide threshold",
+        "ip2_alias": "sp.candidatePeptideThreshold",
+        "allowCustom": false
+    },
+    "n_term_diff_mods": {
+        "default": "0",
+        "description": "Peptide N-term diff mods",
+        "ip2_alias": "sp.ntermdiff",
+        "allowCustom": false
+    },
+    "c_term_diff_mods": {
+        "default": "0",
+        "description": "Peptide C-term diff mods",
+        "ip2_alias": "sp.ctermdiff",
+        "allowCustom": false
+    },
+    "min_peptides_per_protein": {
+        "default": "2",
+        "description": "Minimum number of peptide per protein (-p)",
+        "ip2_alias": "dp.p",
+        "allowCustom": true
+    },
+    "min_tryptic_ends_per_peptide": {
+        "default": " -y 0",
+        "options": [" -y 0", " -y 1", " -y 2"],
+        "optionMap": ["0", "1", "2"],
+        "description": "Minimum number of tryptic end per peptide (-y)",
+        "ip2_alias": "dp.y",
+        "allowCustom": false
+    },
+    "false_positive_type": {
+        "default": "fp",
+        "options": ["fp", "pfp", "sfp"],
+        "optionMap": ["Spectrum (--fp)", "Protein (--pfp)", "Peptide (--sfp)"],
+        "description": "False positive type",
+        "ip2_alias": "dp.fpType",
+        "allowCustom": false
+    },
+    "false_positive_value": {
+        "default": "0.01",
+        "description": "False positive rate",
+        "ip2_alias": "dp.fpValue",
+        "allowCustom": false
+    },
+    "precursor_delta_mass_cutoff": {
+        "default": "",
+        "description": "Precursor delta mass cutoff in ppm (-DM)",
+        "ip2_alias": "dp.DM",
+        "allowCustom": false
+    },
+    "peptide_modification_requirement": {
+        "default": "1",
+        "options": ["0", "1", "2"],
+        "optionMap": ["modified peptide only", "include peptide regardless of modification status", "include only unmodified peptides"],
+        "description": "Peptide modification requirement (-m)",
+        "ip2_alias": "dp.dashM",
+        "allowCustom": false
+    },
+    "best_peptide_false_positive_threshold": {
+        "default": "",
+        "description": "Best peptide FP threshold",
+        "ip2_alias": "dp.tfp",
+        "allowCustom": false
+    },
+    "best_peptide_delta_mass_threshold": {
+        "default": "",
+        "description": "Best peptide delta mass threshold (-tDM)",
+        "ip2_alias": "dp.tDM",
+        "allowCustom": false
+    },
+    "spectra_display_mode": {
+        "default": "0",
+        "options": ["0", "1", "2"],
+        "optionMap": ["include all PSMs for each sequence", "include one spectrum per raw file for each peptide sequence", "include only one spectrum for each peptide sequence"],
+        "description": "Spectra display mode (-t)",
+        "ip2_alias": "dp.dashT",
+        "allowCustom": false
+    },
+    "unique_peptides_only": {
+        "default": "",
+        "options": ["", " -U"],
+        "optionMap": ["no", "yes"],
+        "description": "Unique peptides only",
+        "ip2_alias": "dp.bigUnique",
+        "allowCustom": false
+    },
+    "delta_mass_statistics": {
+        "default": " --mass",
+        "options": [" --mass", ""],
+        "optionMap": ["yes", "no"],
+        "description": "statistics with delta mass (--mass)",
+        "ip2_alias": "dp.mass",
+        "allowCustom": false
+    },
+    "modification_status_statistics": {
+        "default": " --modstat",
+        "options": [" --modstat", ""],
+        "optionMap": ["yes", "no"],
+        "description": "statistics with modification (--modstat)",
+        "ip2_alias": "dp.modstat",
+        "allowCustom": false
+    },
+    "tryptic_status_statistics": {
+        "default": " --trypstat",
+        "options": [" --trypstat", ""],
+        "optionMap": ["yes", "no"],
+        "description": "statistics with tryptic status (--trypstat)",
+        "ip2_alias": "dp.trypstat",
+        "allowCustom": false
+    },
+    "include_subset_proteins": {
+        "default": "no",
+        "options": ["yes", "no"],
+        "description": "Include subset proteins (-in)",
+        "ip2_alias": "dp.dashIn",
+        "allowCustom": false
+    },
+    "protein_id_filter": {
+        "default": "",
+        "description": "Remove protein IDs starting with this string (-e)",
+        "ip2_alias": "dp.e",
+        "allowCustom": false
+    },
+    "peptide_sequence_filter": {
+        "default": "",
+        "description": "Peptide sequence filter (sequences must contain these) (-Sic)",
+        "ip2_alias": "dp.sic",
+        "allowCustom": false
+    },
+    "additional_dtaselect_options": {
+        "default": "",
+        "description": "Additional DTASelect Options",
+        "ip2_alias": "dp.ados",
+        "allowCustom": false
+    }
+}
