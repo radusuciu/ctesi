@@ -115,13 +115,22 @@ class Search:
             except LookupError:
                 # job was not found, the job is finished or something went
                 # horribly wrong
-                
-                job.finished = True
+                tries = tries + 1
 
-                if status_callback:
-                    status_callback(job)
+                try:
+                    dta_select_link = experiment.get_dtaselect_link()
+                    job.finished = True
 
-                return experiment.get_dtaselect_link()
+                    if status_callback:
+                        status_callback(job)
+
+                    return dta_select_link
+                except:
+                    # swallow exception until we've run out of tries
+                    if tries >= max_retries:
+                        raise
+                    else:
+                        pass
 
             work_duration = time.clock() - start
             time.sleep(polling_interval - work_duration)
