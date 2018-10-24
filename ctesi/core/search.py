@@ -98,8 +98,11 @@ class Search:
 
         return database_map[organism]
 
-    def _check_search_status(self, job, experiment, status_callback=None):
+    def _check_search_status(self, job, experiment, status_callback=None, max_retries=2):
         polling_interval = 180
+
+        # try several times to retrieve dtaselect link
+        tries = 0
 
         # wait a bit before we poll for status
         time.sleep(polling_interval)
