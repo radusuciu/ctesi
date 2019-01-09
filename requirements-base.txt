@@ -7,7 +7,7 @@ flask-sqlalchemy
 gunicorn
 ldap3
 marshmallow
-pyyaml
+pyyaml>=4.2b4
 redis
 requests
 sqlalchemy
