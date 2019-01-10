@@ -102,7 +102,7 @@ def search_task(convert_status, experiment_id, ip2_username, ip2_cookie):
         experiment.organism,
         experiment.experiment_type,
         list(pathlib.Path(experiment.path).glob('*.raw')),
-        status_callback=lambda j: update_status(experiment_id, 'searching', meta={'status': j.info['message'], 'progress': j.progress * 100 or 0 }),
+        status_callback=lambda j: update_status(experiment_id, 'searching', meta={'status': j.info.get('message'), 'progress': j.progress * 100 or 0 }),
         search_params=json.loads(experiment.search_params)
     )
 
